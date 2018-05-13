@@ -1,8 +1,10 @@
 import pygame
-import sys
+import os
 from pygame.locals import *
 import cv2
 import time
+
+dir = os.chdir
 
 pygame.init()
 display_width = 800
@@ -18,11 +20,17 @@ cam = cv2.VideoCapture(0)
 finished = False
 # 이건 폰트 받아서 사용해야함!
 # fps 확인용 필요없으면 주석!
-font = pygame.font.Font("D:\KT\miniproj\motioncapture\consola.ttf", 32)
+font = pygame.font.Font("consola.ttf", 32)
+fps = 0
+frame = 0
 
 while not finished:
 	start = time.time()
-	_, myImg = cam.read()
+	ret, myImg = cam.read()
+	if not ret:
+		print('video is end')
+		break
+
 	myImg = cv2.cvtColor(myImg, cv2.COLOR_BGR2RGB)
 	myImg = cv2.resize(myImg, (display_width, display_height))
 	myImg = cv2.rotate(myImg, cv2.ROTATE_90_COUNTERCLOCKWISE)
@@ -45,8 +53,9 @@ while not finished:
 	ourScreen.blit(myImg, (0, 0))
 
 	# fps 확인용 필요없으면 주석!
-	end = (time.time() - start) * 1000
-	text = font.render("{:.4f} fps".format(end), True, (0, 0, 0))
+	fps += time.time() - start
+	frame += 1
+	text = font.render("{:.4f} fps".format(frame/fps), True, (0, 0, 0))
 	ourScreen.blit(text, (0, 0))
 
 	if colorBlue: color = (0, 128, 255)
