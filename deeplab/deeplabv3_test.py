@@ -11,7 +11,9 @@ import time
 #from ipywidgets import interact
 #from ipywidgets import interactive
 #from matplotlib import gridspec
-#from matplotlib import pyplot as plt
+from matplotlib import pyplot as plt
+import pygame
+from pygame.locals import *
 import numpy as np
 from PIL import Image
 import cv2
@@ -34,15 +36,14 @@ _MODEL_URLS = {
 }
 
 # Check configuration and download the model
-
 _TARBALL_NAME = 'deeplab_model.tar.gz'
 model_dir = '../../'
 
 download_path = os.path.join(model_dir, _TARBALL_NAME)
 
-# If model is download_path, skip downloading model.
+# If model is in download_path, skip downloading model.
 if not os.path.isfile(download_path):
-    model_url = _MODEL_URLS['xception_coco_voctrainaug']
+    model_url = _MODEL_URLS['xception_coco_voctrainval']
     tf.gfile.MakeDirs(model_dir)
 
     print('downloading model to %s, this might take a while...' % download_path)
@@ -104,14 +105,19 @@ class DeepLabModel(object):
 
 model = DeepLabModel(download_path)
 
-## Webcam demo
-cap = cv2.VideoCapture("../../data.mp4")
+# with pygame
+pygame.init()
+cap = cv2.VideoCapture("/workspace/miniproj/data.mp4")
+#ret, frame = cap.read()
+#ourScreen = pygame.display.set_mode((frame.shape[0], frame.shape[1]))
+
 
 while True:
     start = time.time()
     ret, frame = cap.read()
     # From cv2 to PIL
     cv2_im = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    cv2.imshow('frame', frame)
     pil_im = Image.fromarray(cv2_im)
 
     # Run model
@@ -120,6 +126,8 @@ while True:
     # Adjust color of mask
     seg_image = get_dataset_colormap.label_to_color_image(
         seg_map, get_dataset_colormap.get_pascal_name()).astype(np.uint8)
+
+    cv2.imshow('seg_image', seg_image)
 
     # Convert PIL image back to cv2 and resize
     #frame = np.array(pil_im)
@@ -131,8 +139,6 @@ while True:
     # Stack horizontally color frame and mask
     #color_and_mask = np.hstack((resized, seg_image))
 
-    cv2.imshow('seg_image', seg_image)
-    cv2.imshow('cv2_im', cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
     if cv2.waitKey(25) & 0xFF == ord('q'):
         cap.release()
         cv2.destroyAllWindows()
