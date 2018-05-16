@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import collections
 import os
 #import io
@@ -13,34 +12,6 @@ import time
 #from ipywidgets import interactive
 #from matplotlib import gridspec
 #from matplotlib import pyplot as plt
-=======
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Wed May 16 16:57:55 2018
-
-@author: ktai15
-"""
-
-###  COPY ALL THE CODE INTO A JYPYTER NOTEBOOK  ### 
-###  THE JYPYTER NOTEBOOK NEEDS TO BE IN 'tensorflow\models\research\deeplab'  ### 
-
-## Imports
-
-import collections
-import os
-import io
-import sys
-import tarfile
-import tempfile
-import urllib
-
-from IPython import display
-from ipywidgets import interact
-from ipywidgets import interactive
-from matplotlib import gridspec
-from matplotlib import pyplot as plt
->>>>>>> e29af444e9fa72125585a9c4cf117df1d04e40c1
 import numpy as np
 from PIL import Image
 import cv2

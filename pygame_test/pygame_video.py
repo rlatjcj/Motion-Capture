@@ -18,11 +18,9 @@ y = 30
 clock = pygame.time.Clock()
 cam = cv2.VideoCapture(0)
 finished = False
-# 이건 폰트 받아서 사용해야함!
-# fps 확인용 필요없으면 주석!
+
+# for checking fps!
 font = pygame.font.Font("consola.ttf", 32)
-fps = 0
-frame = 0
 
 while not finished:
 	start = time.time()
@@ -52,10 +50,9 @@ while not finished:
 
 	ourScreen.blit(myImg, (0, 0))
 
-	# fps 확인용 필요없으면 주석!
-	fps += time.time() - start
-	frame += 1
-	text = font.render("{:.4f} fps".format(frame/fps), True, (0, 0, 0))
+	# for checking fps!
+	fps = time.time() - start
+	text = font.render("{:.4f} fps".format(1/fps), True, (0, 0, 0))
 	ourScreen.blit(text, (0, 0))
 
 	if colorBlue: color = (0, 128, 255)
