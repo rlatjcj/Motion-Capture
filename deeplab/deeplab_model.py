@@ -3,7 +3,8 @@ import tarfile
 import numpy as np
 from PIL import Image
 import tensorflow as tf
-
+#os.chdir("deeplab/")
+#os.getcwd()
 ## Load model in TensorFlow
 _FROZEN_GRAPH_NAME = 'frozen_inference_graph'
 

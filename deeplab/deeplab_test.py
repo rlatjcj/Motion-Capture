@@ -8,10 +8,20 @@ from deeplab_model import DeepLabModel
 # Needed to show segmentation colormap labels
 import get_dataset_colormap
 
-MODEL_PATY = '../../deeplab_model.tar.gz'
+MODEL_PATH = "../../deeplab_model.tar.gz"
+
+# If model is in download_path, skip downloading model.
+if not os.path.isfile(MODEL_PATH):
+    model_url = 'http://download.tensorflow.org/models/deeplabv3_pascal_trainval_2018_01_04.tar.gz'
+    tf.gfile.MakeDirs(model_dir)
+
+    print('downloading model to %s, this might take a while...' % download_path)
+    urllib.request.urlretrieve(model_url, download_path)
+    print('download completed!')
+
 
 if __name__ == '__main__':
-    model = DeepLabModel(MODEL_PATY)
+    model = DeepLabModel(MODEL_PATH)
 
     cap = cv2.VideoCapture(0)
 
