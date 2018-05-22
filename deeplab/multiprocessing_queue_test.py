@@ -48,7 +48,6 @@ kernel_size = 5
 tile_size = img.shape[0]/num_processes  # Assuming img.shape[0] is divisible by 4 in this case
 
 def mp_filter(x, result):
-    print(psutil.virtual_memory())  # monitor memory usage
     result.put(cv2.GaussianBlur(img[int(tile_size*x):int(tile_size*(x+1)), :], (kernel_size, kernel_size), kernel_size/5))
     # note that you actually have to process a slightly larger block and leave out the border.
 
