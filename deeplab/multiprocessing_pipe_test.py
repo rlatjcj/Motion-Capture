@@ -1,41 +1,40 @@
-
+import multiprocessing
 import cv2
-from multiprocessing import Process, Pipe
-import os
 import time
-import numpy as np
 
-def show(conn):
-    print("pr1: {0}, parent: {1}".format(os.getpid(), os.getppid()))
-    cap = cv2.VideoCapture("../../data.mp4")
+def cam_loop(pipe_parent):
+    cap = cv2.VideoCapture(0)
+    cv2.namedWindow('papa')
 
     while True:
-        ret, img = cap.read()
-        cv2.imshow("Parent Image", img)
-
+        _ , img = cap.read()
         if cv2.waitKey(10) == 32:
-            conn.send(img)
+            pipe_parent.send(img)
 
+        cv2.imshow('papa', img)
         if cv2.waitKey(10) == 27:
-            cap.release()
-            cv2.destroyAllWindows()
+            break
 
-def child(conn):
-    child_img = conn.recv()
-    print("pr2: {0}, parent: {1}".format(os.getpid(), os.getppid()))
-    print(child_img)
-    print(child_img.shape)
-    print(type(child_img))
+def show_loop(pipe_child):
+    i = 0
+    while True:
+        from_queue = pipe_child.recv()
+        if from_queue is not None:
+            cv2.imwrite('pepe{}.png'.format(i), from_queue)
+            i += 1
 
-    cv2.namedWindow("Child Image")
-    cv2.imshow("Child Image", child_img)
-    time.sleep(5)
-    cv2.destroyWindow("Child Image")
+if __name__ == '__main__':
 
+    logger = multiprocessing.log_to_stderr()
+    logger.setLevel(multiprocessing.SUBDEBUG)
 
-if __name__ == "__main__":
-    parent_conn, child_conn = Pipe()
-    pr1 = Process(target=show, args=(parent_conn,))
-    pr2 = Process(target=child, args=(child_conn,))
-    pr1.start()
-    pr2.start()
+    pipe_parent, pipe_child = multiprocessing.Pipe()
+
+    cam_process = multiprocessing.Process(target=cam_loop,args=(pipe_parent, ))
+    cam_process.start()
+
+    show_process = multiprocessing.Process(target=show_loop,args=(pipe_child, ))
+    show_process.start()
+
+    cam_process.join()
+    show_loop.join()
