@@ -7,7 +7,7 @@ import os
 
 def show(n, result):
     print("pr1: {0}, parent: {1}".format(os.getpid(), os.getppid()))
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture("../../data.mp4")
 
     while True:
         ret, img = cap.read()

@@ -4,7 +4,7 @@ import time
 import math
 from segmentation import SegImg
 
-VIDEO = 0
+VIDEO = "../../data1.mp4"
 TIME_INIT = 5
 FONT_FACE = cv2.FONT_HERSHEY_DUPLEX
 FONT_SCALE = 5
@@ -18,7 +18,7 @@ def main():
     SegImg(img)
     #fps = cap.get(cv2.CAP_PROP_FPS)
     flag = False
-    
+
     height = img.shape[0]
     width = img.shape[1]
     text_width = 0

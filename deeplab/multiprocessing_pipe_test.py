@@ -7,7 +7,7 @@ import numpy as np
 
 def show(conn):
     print("pr1: {0}, parent: {1}".format(os.getpid(), os.getppid()))
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture("../../data.mp4")
 
     while True:
         ret, img = cap.read()
@@ -28,7 +28,7 @@ def child(conn):
     print(type(child_img))
 
     cv2.namedWindow("Child Image")
-    cv2.imshow("Child Image", np.array(child_img))
+    cv2.imshow("Child Image", child_img)
     time.sleep(5)
     cv2.destroyWindow("Child Image")
 
