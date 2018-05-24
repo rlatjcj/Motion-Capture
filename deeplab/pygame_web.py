@@ -1,11 +1,5 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Thu May 24 10:37:36 2018
 
-@author: ktai07
-"""
-
+# 76, 146 line for playing music
 
 # =============================================================================
 # Import library
@@ -15,17 +9,16 @@ from pygame.locals import *
 import cv2
 import numpy as np
 import sys
-from PIL import Image
+#from PIL import Image
 import time
-import random
-import os
+#import random
+#import os
 
 
 # =============================================================================
 # directory change to folder with this pages
 # =============================================================================
-current_path = os.getcwd()
-os.chdir("/workspace/motion_capture")
+#current_path = os.getcwd()
 
 
 # =============================================================================
@@ -41,16 +34,13 @@ bright_green = (0,255,0)
 block_color = (53,115,255)
 
 # display size to use
-display_width = 1280
-display_height = 720
+#display_width = 1280
+#display_height = 720
 
 # button size to use
 button_width = 200
 button_height = 130
 
-# button position
-button_pos_x = display_width-button_width
-button_pos_y = display_height-button_height
 
 # global variables
 pause = False
@@ -60,7 +50,7 @@ pause = False
 # =============================================================================
 # camera load
 # =============================================================================
-camera = cv2.VideoCapture("/workspace/motion_capture/avi/angel.mp4")
+camera = cv2.VideoCapture(0)
 
 
 # =============================================================================
@@ -70,17 +60,25 @@ camera = cv2.VideoCapture("/workspace/motion_capture/avi/angel.mp4")
 pygame.init()
 pygame.display.set_caption("OpenCV camera stream on Pygame")
 # Display
-screen = pygame.display.set_mode([display_width, display_height])
+display_width = pygame.display.Info().current_w
+display_height = pygame.display.Info().current_h
+screen = pygame.display.set_mode([display_width, display_height], pygame.FULLSCREEN | pygame.NOFRAME | pygame.HWSURFACE, 32)
 clock = pygame.time.Clock()
+
+# button position
+button_pos_x = display_width-button_width
+button_pos_y = display_height-button_height
+
 # Music
-music_path = current_path + str("/music") # music folder
-pygame.mixer.music.load(music_path+"/"+"Kim Ximya X D. Sanders - Process.mp3")
+#music_path = "./music/" # music folder
+#pygame.mixer.music.load(music_path+"Kim Ximya X D. Sanders - Process.mp3")
 #crash_sound = pygame.mixer.Sound()
 
 
 # =============================================================================
 # function
 # =============================================================================
+
 
 def quitgame() :
     pygame.quit()
@@ -103,8 +101,7 @@ def paused() :
     while pause :
         for event in pygame.event.get() :
             if event.type == pygame.QUIT :
-                pygame.quit()
-                quit()
+                quitgame()
 
         button("Continue!", int(button_pos_x/2), int(button_pos_y/5*2), button_width, button_height, green, bright_green, unpause)
         button("Quit", int(button_pos_x/2), int(button_pos_y/5*4), button_width, button_height, red, bright_red, quitgame)
@@ -130,7 +127,7 @@ def button(msg, x, y, w, h, ic, ac, action=None) :
     click = pygame.mouse.get_pressed()
     #(0, 0, 0) (left_button, middle_button, right_button)
 
-    if x+w > mouse[0] >x and y+h > mouse[1] > y :
+    if x+w > mouse[0] > x and y+h > mouse[1] > y :
         pygame.draw.rect(screen, ac, (x,y,w,h)) # 장소, action_color, top left w, h
         if click[0] == 1 and action != None :
             action()
@@ -143,8 +140,17 @@ def button(msg, x, y, w, h, ic, ac, action=None) :
     screen.blit(butTextSurf, butTextRect)
 
 
+def video_setting(frame):
+    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    frame = cv2.resize(frame, (display_width, display_height))
+    frame = np.rot90(np.fliplr(frame))
+    frame = pygame.surfarray.make_surface(frame)
+
+    return frame
+
+
 def game_loop() :
-    pygame.mixer.music.play(-1) # 5 is 6 times , -1 is loop
+    #pygame.mixer.music.play(-1) # 5 is 6 times , -1 is loop
 
     global pause # default is False
     #dodged = 0 # This is User Score
@@ -154,18 +160,13 @@ def game_loop() :
     while not gameExit :
         # use same cmamera(avi, mp4...)
         ret, frame = camera.read()
-        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        frame = cv2.resize(frame, (display_width, display_height))
-        frame = np.rot90(np.fliplr(frame))
-        frame = pygame.surfarray.make_surface(frame)
+        frame = video_setting(frame)
         screen.blit(frame, (0,0))
 
         for event in pygame.event.get() :
             if event.type == pygame.QUIT :
-                pygame.quit()
+                quitgame()
             if event.type == pygame.KEYDOWN :
-                if event.key == pygame.K_q:
-                    sys.exit(0)
                 if event.key == pygame.K_p :
                     pause = True
                     paused()
@@ -185,10 +186,7 @@ def main() :
         while intro :
 
             ret, frame = camera.read()
-            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            frame = cv2.resize(frame, (display_width, display_height))
-            frame = np.rot90(np.fliplr(frame))
-            frame = pygame.surfarray.make_surface(frame)
+            frame = video_setting(frame)
             screen.blit(frame, (0,0))
 
             #button(msg, x, y, w, h, inaction_button_color, action_button_color, function_name)
@@ -210,8 +208,8 @@ def main() :
                         sys.exit(0)
 
     except KeyboardInterrupt or SystemExit :
-        pygame.quit()
-        cv2.destroyAllWindows()
+        quitgame()
+
 
 
 
