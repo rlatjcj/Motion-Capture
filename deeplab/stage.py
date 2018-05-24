@@ -14,8 +14,8 @@ def rect_big(width, height, img, flag=True):
                     ((width-rect_width)//2, height-rect_height),
                     ((width+rect_width)//2, height), BOUNDING_COLOR, -1)
 
-        return bounding
-
+        return bounding, rect_width*rect_height
+        
     else:
         img_print = cv2.rectangle(img, ((width-rect_width)//2, height-rect_height),
                     ((width+rect_width)//2, height), BOUNDING_COLOR_PRINT, 2)
