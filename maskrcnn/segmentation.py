@@ -47,6 +47,7 @@ model.load_weights(MODEL, by_name=True)
 
 def SegImg(img):
     start = time.time()
+    result = None
     # Run detection
     r = model.detect([img], verbose=0)[0]
     n = 0
@@ -54,7 +55,7 @@ def SegImg(img):
         if n > LIMIT:
             break
         n += 1
-        
+
         if idx == 0:
             result = np.array(r["masks"], dtype=np.uint8)[:,:,idx]
             result[np.where(result == 1)] = 100

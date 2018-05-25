@@ -1,6 +1,11 @@
 import multiprocessing
 import cv2
 import time
+from segmentation import SegImg
+
+READY = True
+success = False
+fail = False
 
 def cam_loop(pipe_parent):
     cap = cv2.VideoCapture(0)
@@ -20,7 +25,8 @@ def show_loop(pipe_child):
     while True:
         from_queue = pipe_child.recv()
         if from_queue is not None:
-            cv2.imwrite('pepe{}.png'.format(i), from_queue)
+            seg_image = SegImg(from_queue, READY)
+            cv2.imwrite('pepe{}.png'.format(i), seg_image)
             i += 1
 
 if __name__ == '__main__':
