@@ -1019,7 +1019,7 @@ class MaskRCNN():
             mode: Either "training" or "inference". The inputs and
                 outputs of the model differ accordingly.
         """
-        assert mode in ['training', 'inference']
+        assert mode in ['inference']
 
         # Image size must be dividable by 2 multiple times
         h, w = config.IMAGE_SHAPE[:2]

@@ -1,25 +1,15 @@
-import os
-import time
 import cv2
 import numpy as np
-import time
 
-#os.getcwd()
-#os.chdir("./maskrcnn")
-
-# Import Mask RCNN
 from config import Config
 import model as modellib
 import utils
+from stage import DETERMINE_STAGE
+import calculate
 
 MODEL = "../../mask_rcnn_coco.h5"
 LOGS = "./log/"  # to save training logs
 LIMIT = 2
-
-
-############################################################
-#  Configurations
-############################################################
 
 class InferenceConfig(Config):
     # Set batch size to 1 since we'll be running inference on
@@ -45,28 +35,57 @@ model = modellib.MaskRCNN(mode="inference", config=config, model_dir=LOGS)
 print("Loading weights ", MODEL)
 model.load_weights(MODEL, by_name=True)
 
-def SegImg(img):
-    start = time.time()
-    result = None
+def dist(x,y):
+    return np.sqrt(np.sum((x-y)**2))
+
+def SegImg(img, READY, STAGE, SUCCESS=False, FAIL=False):
     # Run detection
     r = model.detect([img], verbose=0)[0]
-    n = 0
-    for idx in np.where(r["class_ids"] == 1)[0]:
-        if n > LIMIT:
-            break
-        n += 1
 
-        if idx == 0:
-            result = np.array(r["masks"], dtype=np.uint8)[:,:,idx]
-            result[np.where(result == 1)] = 100
-        else:
-            raw = np.array(r["masks"], dtype=np.uint8)[:,:,idx]
-            raw[np.where(raw == 1)] = 200
-            result += raw
+    if READY:
+        person_index = np.where(r["class_ids"] == 1)[0]
 
-    result[np.where(result != 0)] = 200
-    result = cv2.cvtColor(result, cv2.COLOR_GRAY2RGB)
-    cv2.imshow('result', result)
+        # if there are no people in image
+        if len(person_index) == 0:
+            return SUCCESS, FAIL
 
-    # to check fps
-    print('{:.4f} fps'.format(1/(time.time() - start)))
+
+        # STAGE
+        bounding, area, center = STAGE.determine_stage()
+
+        rois = np.array(r["rois"][person_index])
+
+        # calculate roi's center position
+        distances = []
+        for idx in range(len(rois)) :
+            x = (rois[idx][1] + rois[idx][3])//2
+            y = (rois[idx][0] + rois[idx][2])//2
+            pos = np.array([x,y])
+            result = dist(pos, center)
+            distances.append(result)
+
+        final_instance_index = np.array(distances).argsort()[:LIMIT]
+
+        masks = np.array(r["masks"], dtype=np.uint8)[:,:,person_index]
+        person_masks = masks[:,:,final_instance_index]
+
+        person_masks = np.sum(person_masks, axis=2, dtype=np.uint8)
+        person_masks[np.where(person_masks == 0)] = 0
+        person_masks[np.where(person_masks != 0)] = 200
+
+        # for postprocessing about person_masks
+        person_masks = cv2.erode(person_masks, np.ones((5,5)), iterations=3)
+        person_masks = cv2.dilate(person_masks, np.ones((5,5)), iterations=3)
+
+        result = person_masks - bounding
+
+        # # of segmentation for person
+        seg_num = np.array(np.where(person_masks == 200)).shape[1]
+
+        # # of not in bounding box
+        res_num = np.array(np.where(result == 200)).shape[1]
+
+        # for calculating whether pixels are changed
+        SUCCESS, FAIL = calculate.change(res_num)
+
+        return SUCCESS, FAIL
