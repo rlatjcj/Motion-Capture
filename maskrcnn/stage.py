@@ -1,6 +1,7 @@
 
 import cv2
 import numpy as np
+import pygame
 
 BOUNDING_COLOR_PRINT = (255,255,0)
 BOUNDING_COLOR = 100
@@ -14,7 +15,7 @@ class DETERMINE_STAGE():
         self.width = width
         self.version = 0
 
-        self.ROUND_LIMIT = 1
+        self.ROUND_LIMIT = 2
         # the number of STAGEs for each round
         self.ROUND_1 = 1
         self.ROUND_2 = 2
@@ -31,66 +32,81 @@ class DETERMINE_STAGE():
 
     # 1-0 ROUND
     def rect_big(self, img=None, flag=True):
-        rect_width = self.width * 3 // 5
-        rect_height = self.height * 4 // 5
-
         if flag:
-            bounding = cv2.rectangle(np.zeros((self.height, self.width), dtype=np.uint8),
-                        ((self.width-rect_width)//2, self.height-rect_height),
-                        ((self.width+rect_width)//2, self.height), BOUNDING_COLOR, -1)
+            seg_height = img.shape[0]
+            seg_width = img.shape[1]
+            rect_width = seg_width * 3 // 5
+            rect_height = seg_height * 4 // 5
+            bounding = cv2.rectangle(np.zeros((seg_height, seg_width), dtype=np.uint8),
+                        ((seg_width-rect_width)//2, seg_height-rect_height),
+                        ((seg_width+rect_width)//2, seg_height), BOUNDING_COLOR, -1)
 
             center = np.array([self.width//2, (2*self.height-rect_height)//2])
 
             return bounding, rect_width*rect_height, center
 
         else:
-            img_print = cv2.rectangle(img,
-                        ((self.width-rect_width)//2, self.height-rect_height),
-                        ((self.width+rect_width)//2, self.height), BOUNDING_COLOR_PRINT, 2)
+            rect_width = self.width * 3 // 5
+            rect_height = self.height * 4 // 5
+            pygame.draw.rect(img, BOUNDING_COLOR_PRINT,
+                             ((self.width-rect_width)//2,
+                             self.height-rect_height,
+                             rect_width,
+                             rect_height), 2)
 
-            return img_print
+            return img
 
 
     # 2-0 STAGE
     def rect_thin(self, img=None, flag=True):
-        rect_width = self.width * 2 // 5
-        rect_height = self.height * 4 // 5
-
         if flag:
-            bounding = cv2.rectangle(np.zeros((self.height, self.width), dtype=np.uint8),
-                        ((self.width-rect_width)//2, self.height-rect_height),
-                        ((self.width+rect_width)//2, self.height), BOUNDING_COLOR, -1)
+            seg_height = img.shape[0]
+            seg_width = img.shape[1]
+            rect_width = seg_width * 2 // 5
+            rect_height = seg_height * 4 // 5
+            bounding = cv2.rectangle(np.zeros((seg_height, seg_width), dtype=np.uint8),
+                        ((seg_width-rect_width)//2, seg_height-rect_height),
+                        ((seg_width+rect_width)//2, seg_height), BOUNDING_COLOR, -1)
 
             center = np.array([self.width//2, (2*self.height-rect_height)//2])
 
             return bounding, rect_width*rect_height, center
 
         else:
-            img_print = cv2.rectangle(img,
-                        ((self.width-rect_width)//2, self.height-rect_height),
-                        ((self.width+rect_width)//2, self.height), BOUNDING_COLOR_PRINT, 2)
+            rect_width = self.width * 2 // 5
+            rect_height = self.height * 4 // 5
+            pygame.draw.rect(img, BOUNDING_COLOR_PRINT,
+                             ((self.width-rect_width)//2,
+                             self.height-rect_height,
+                             rect_width,
+                             rect_height), 2)
 
-            return img_print
+            return img
 
     # 2-1 STAGE
     def rect_fat(self, img=None, flag=True):
-        rect_width = self.width * 3 // 5
-        rect_height = self.height * 2 // 5
-
         if flag:
-            bounding = cv2.rectangle(np.zeros((self.height, self.width), dtype=np.uint8),
-                        ((self.width-rect_width)//2, self.height-rect_height),
-                        ((self.width+rect_width)//2, self.height), BOUNDING_COLOR, -1)
+            seg_height = img.shape[0]
+            seg_width = img.shape[1]
+            rect_width = seg_width * 3 // 5
+            rect_height = seg_height * 2 // 5
+            bounding = cv2.rectangle(np.zeros((seg_height, seg_width), dtype=np.uint8),
+                        ((seg_width-rect_width)//2, seg_height-rect_height),
+                        ((seg_width+rect_width)//2, seg_height), BOUNDING_COLOR, -1)
 
             center = np.array([self.width//2, (2*self.height-rect_height)//2])
 
             return bounding, rect_width*rect_height, center
 
         else:
-            img_print = cv2.rectangle(img,
-                        ((self.width-rect_width)//2, self.height-rect_height),
-                        ((self.width+rect_width)//2, self.height), BOUNDING_COLOR_PRINT, 2)
+            rect_width = self.width * 3 // 5
+            rect_height = self.height * 2 // 5
+            pygame.draw.rect(img, BOUNDING_COLOR_PRINT,
+                             ((self.width-rect_width)//2,
+                             self.height-rect_height,
+                             rect_width,
+                             rect_height), 2)
 
-            return img_print
+            return img
 
     # 3-0 STAGE

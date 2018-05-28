@@ -41,7 +41,7 @@ def dist(x,y):
 def SegImg(img, READY, STAGE, SUCCESS=False, FAIL=False):
     # Run detection
     r = model.detect([img], verbose=0)[0]
-
+    
     if READY:
         person_index = np.where(r["class_ids"] == 1)[0]
 
@@ -51,7 +51,7 @@ def SegImg(img, READY, STAGE, SUCCESS=False, FAIL=False):
 
 
         # STAGE
-        bounding, area, center = STAGE.determine_stage()
+        bounding, area, center = STAGE.determine_stage(r["masks"][:,:,0])
 
         rois = np.array(r["rois"][person_index])
 
