@@ -82,9 +82,9 @@ def MakeText(msg, size, text=True, x=None, y=None, w=None, h=None, font='freesan
     TextSurf, TextRect = text_objects(msg, Text)
     if h == None:
         if text:
-            TextRect.center = ((display_width//2),display_height//2)
+            TextRect.center = (display_width//2,display_height//2)
         else:
-            TextRect.center = ((display_width//2),TextRect.height*2//3)
+            TextRect.center = (display_width//2,TextRect.height*2//3)
     # button
     else:
         TextRect.center = ((x+(w//2)),(y+(h//2)))
@@ -121,7 +121,7 @@ def button(msg, x, y, w, h, ic, ac, current, next) :
 def video_setting(frame):
     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     frame = cv2.resize(frame, (display_width, display_height))
-    frame = np.rot90(np.fliplr(frame))
+    frame = np.rot90(frame)
     frame = pygame.surfarray.make_surface(frame)
 
     return frame
@@ -130,8 +130,8 @@ def video_setting(frame):
 def INTRO(CURRENT, PREV):
     PREV = CURRENT
     CURRENT = 0
-    button("START", int(button_pos_x/2), int(button_pos_y/5*2), button_width, button_height, green, bright_green, CURRENT, 3)
-    button("QUIT", int(button_pos_x/2), int(button_pos_y/5*4), button_width, button_height, red, bright_red, CURRENT, 2)
+    button("START", button_pos_x//2, button_pos_y//5*2, button_width, button_height, green, bright_green, CURRENT, 3)
+    button("QUIT", button_pos_x//2, button_pos_y//5*4, button_width, button_height, red, bright_red, CURRENT, 2)
 
     for event in pygame.event.get() :
         if event.type == pygame.KEYDOWN :
@@ -154,8 +154,8 @@ def PAUSED(CURRENT, PREV) :
 
     while pause:
         MakeText("PAUSED", 115, False)
-        button("CONTINUE", int(button_pos_x/2), int(button_pos_y/5*2), button_width, button_height, green, bright_green, CURRENT, PREV)
-        button("QUIT", int(button_pos_x/2), int(button_pos_y/5*4), button_width, button_height, red, bright_red, CURRENT, 2)
+        button("CONTINUE", button_pos_x//2, button_pos_y//5*2, button_width, button_height, green, bright_green, CURRENT, PREV)
+        button("QUIT", button_pos_x//2, button_pos_y//5*4, button_width, button_height, red, bright_red, CURRENT, 2)
 
         pygame.display.flip()
 
@@ -172,8 +172,8 @@ def QUIT() :
 def CHOOSE_GAME(CURRENT, PREV):
     PREV = CURRENT
     CURRENT = 3
-    button("GAME1", int(button_pos_x/2), int(button_pos_y/5*2), button_width, button_height, green, bright_green, CURRENT, 4)
-    button("GAME2", int(button_pos_x/2), int(button_pos_y/5*4), button_width, button_height, red, bright_red, CURRENT, 5)
+    button("GAME1", button_pos_x//2, button_pos_y//5*2, button_width, button_height, green, bright_green, CURRENT, 4)
+    button("GAME2", button_pos_x//2, button_pos_y//5*4, button_width, button_height, red, bright_red, CURRENT, 5)
 
     for event in pygame.event.get() :
         if event.type == pygame.KEYDOWN :
@@ -203,8 +203,14 @@ def GAME1(CURRENT, PREV):
     # for initializing
     ret, img = camera.read()
 
+    # load images
+    FIT_POSE = pygame.image.load("./image/p_00_position_.png")
+    FIT_POSE = pygame.transform.scale(FIT_POSE, (display_width//2, display_height*9//10))
+    FIT_SHAPE = pygame.surfarray.array2d(FIT_POSE).shape
+
     TIME_INIT = 5
     # initialize flags
+    FIT = True
     READY = False
     SUCCESS = False
     FAIL = False
@@ -215,6 +221,7 @@ def GAME1(CURRENT, PREV):
     STAGE = DETERMINE_STAGE(display_height, display_width)
     SegImg(img, READY, STAGE)
 
+    FIT_time = time.time()
     while True:
         ret, img = camera.read()
         if not ret:
@@ -236,6 +243,11 @@ def GAME1(CURRENT, PREV):
                 MakeText("NO PERSON", 115)
                 if (time.time()-print_time) >= 5:
                     NO_PERSON = False
+            elif FIT:
+                MakeText("FIT THE TALLEST PERSON", 115, False)
+                screen.blit(FIT_POSE, ((display_width-FIT_SHAPE[0])//2,display_height-FIT_SHAPE[1]-20))
+                if TIME_INIT < time.time() - FIT_time:
+                    FIT = False
             elif not SUCCESS and not FAIL:
                 MakeText("READY", 115)
         else:
@@ -283,7 +295,7 @@ def GAME1(CURRENT, PREV):
                 PRINT_SUCCESS = False
 
         pygame.display.flip()
-        clock.tick(20)
+        clock.tick(30)
 
 
 def GAME2(CURRENT, PREV):
@@ -299,11 +311,10 @@ def main():
         CURRENT = 0
         PREV = 0
         while True :
-
-            ret, frame = camera.read()
-
-            frame = video_setting(frame)
-            screen.blit(frame, (0,0))
+            screen.fill(white)
+            #ret, frame = camera.read()
+            #frame = video_setting(frame)
+            #screen.blit(frame, (0,0))
             num_where = np.argmax(MENU_LIST)
             MENU[num_where](CURRENT, PREV)
 
@@ -312,6 +323,7 @@ def main():
                     if event.key == pygame.K_q:
                         QUIT()
 
+            clock.tick(100)
 
     except KeyboardInterrupt or SystemExit :
         QUIT()
