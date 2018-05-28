@@ -46,8 +46,8 @@ display_width = pygame.display.Info().current_w
 display_height = pygame.display.Info().current_h
 
 # button size to use
-button_width = 522
-button_height = 173
+button_width = 200
+button_height = 130
 
 #screen = pygame.display.set_mode([display_width, display_height], pygame.FULLSCREEN | pygame.NOFRAME | pygame.HWSURFACE, 32)
 screen = pygame.display.set_mode([display_width, display_height])
@@ -57,6 +57,7 @@ clock = pygame.time.Clock()
 button_pos_x = display_width-button_width
 button_pos_y = display_height-button_height
 
+pause = False
 
 # Music
 #music_path = "./music/" # music folder
@@ -67,8 +68,6 @@ button_pos_y = display_height-button_height
 # =============================================================================
 # function
 # =============================================================================
-
-MENU_LIST = np.array((True, False, False, False, False, False))
 
 def MakeText(msg, size, text=True, x=None, y=None, w=None, h=None, font='freesansbold.ttf'):
     Text = pygame.font.Font(font, size) # font & size
@@ -91,22 +90,26 @@ def text_objects(text, font) :
     return textSurface, textSurface.get_rect()
 
 
-def button(BUTTON, x, y, w, h, ic, ac, current=None, next=None) :
-    global MENU_LIST
+def button(msg, x, y, w, h, ic, ac, action) :
+    global MENU_LIST, pause
     mouse = pygame.mouse.get_pos()
+    click = pygame.mouse.get_pressed()
 
     if x+w > mouse[0] > x and y+h > mouse[1] > y :
-        screen.blit(BUTTON, (x, y))
-        #pygame.draw.rect(screen, ac, (x,y,w,h)) # 장소, action_color, top left w, h
+        pygame.draw.rect(screen, ac, (x,y,w,h)) # 장소, action_color, top left w, h
         for event in pygame.event.get():
-            if event.type == MOUSEBUTTONUP and event.button == 1:
-                MENU_LIST[current] = False
-                MENU_LIST[next] = True
-                if current == None:
+            if click[0] == 1 and action != None:
+                action()
+
+            if action == None:
+                if msg == "QUIT":
+                    sys.exit()
+                if msg == "TRY AGAIN":
                     return True
     else :
-        screen.blit(BUTTON, (x, y))
-        #pygame.draw.rect(screen, ic, (x,y,w,h)) # 장소, inaction_color, top left w, h
+        pygame.draw.rect(screen, ic, (x,y,w,h)) # 장소, inaction_color, top left w, h
+
+    MakeText(msg, 20, x=x, y=y, w=w, h=h, font='freesansbold.ttf')
 
 
 def video_setting(frame):
@@ -118,26 +121,27 @@ def video_setting(frame):
     return frame
 
 
-def INTRO(CURRENT, PREV, B1, B2=None):
-    PREV = CURRENT
-    CURRENT = 0
-    #screen.blit(B1, (button_pos_x//2,button_pos_y//5*2))
-    button(B1, button_pos_x//2, button_pos_y//5*2, button_width, button_height, green, bright_green, CURRENT, 3)
-    button(B1, button_pos_x//2, button_pos_y//5*4, button_width, button_height, red, bright_red, CURRENT, 2)
+def INTRO():
+    while True:
+        screen.fill(white)
+        button("START", button_pos_x//2, button_pos_y//5*2, button_width, button_height, green, bright_green, CHOOSE_GAME)
+        button("QUIT", button_pos_x//2, button_pos_y//5*4, button_width, button_height, red, bright_red, QUIT)
 
-    for event in pygame.event.get() :
-        if event.type == pygame.KEYDOWN :
-            if event.key == pygame.K_p :
-                screen.fill(white)
-                PAUSE()
+        for event in pygame.event.get() :
+            if event.type == pygame.KEYDOWN :
+                if event.key == pygame.K_p :
+                    screen.fill(white)
+                    PAUSE()
 
-    # Game name display
-    MakeText("MOTION GAME", 115, False)
+        # Game name display
+        MakeText("MOTION GAME", 115, False)
 
-    pygame.display.flip()
+        pygame.display.flip()
 
 
 def PAUSE() :
+    global pause
+
     #pygame.mixer.music.pause() # music pause
     pause = True
     while pause:
@@ -146,8 +150,8 @@ def PAUSE() :
                 if event.key == pygame.K_p:
                     pause = False
 
-        MakeText("PAUSED", 115)
-        pygame.display.update()
+        MakeText("PAUSE", 115)
+        pygame.display.flip()
 
 
 def QUIT() :
@@ -155,27 +159,26 @@ def QUIT() :
     quit()
 
 
-def CHOOSE_GAME(CURRENT, PREV, B1, B2=None):
-    PREV = CURRENT
-    CURRENT = 3
-    button(B1, button_pos_x//2, button_pos_y//5*2, button_width, button_height, green, bright_green, CURRENT, 4)
-    button(B1, button_pos_x//2, button_pos_y//5*4, button_width, button_height, red, bright_red, CURRENT, 5)
+def CHOOSE_GAME():
+    while True:
+        screen.fill(white)
+        button("GAME1", button_pos_x//2, button_pos_y//5*2, button_width, button_height, green, bright_green, GAME1)
+        button("GAME2", button_pos_x//2, button_pos_y//5*4, button_width, button_height, red, bright_red, GAME2)
 
-    for event in pygame.event.get() :
-        if event.type == pygame.KEYDOWN :
-            if event.key == pygame.K_p :
-                screen.fill(white)
-                PAUSE()
+        for event in pygame.event.get() :
+            if event.type == pygame.KEYDOWN :
+                if event.key == pygame.K_p :
+                    screen.fill(white)
+                    PAUSE()
 
-    # Game name display
-    MakeText("CHOOSE GAME", 115, False)
+        # Game name display
+        MakeText("CHOOSE GAME", 115, False)
 
-    pygame.display.flip()
+        pygame.display.update()
+        clock.tick(30)
 
-def GAME1(CURRENT, PREV, B1, B2=None):
+def GAME1():
     global screen, display_width, display_height
-    PREV = CURRENT
-    CURRENT = 4
 
     # LOADING...
     screen.fill(white)
@@ -215,17 +218,15 @@ def GAME1(CURRENT, PREV, B1, B2=None):
         frame = video_setting(img)
         screen.blit(frame, (0,0))
 
-        for event in pygame.event.get() :
-            if event.type == pygame.KEYDOWN :
-                if event.key == pygame.K_SPACE:
-                    start = time.time()
-                    READY = True
-                if event.key == pygame.K_p :
-                    PAUSE()
-                    if MENU_LIST[2]:
-                        QUIT()
-
         if not READY:
+            for event in pygame.event.get() :
+                if event.type == pygame.KEYDOWN :
+                    if event.key == pygame.K_SPACE:
+                        start = time.time()
+                        READY = True
+                    if event.key == pygame.K_p :
+                        PAUSE()
+
             if NO_PERSON:
                 MakeText("NO PERSON", 115)
                 if (time.time()-print_time) >= 5:
@@ -262,12 +263,11 @@ def GAME1(CURRENT, PREV, B1, B2=None):
 
                     MakeText("CLEAR ALL ROUND", 115)
                     if (time.time()-print_time) >= 10:
-                        while True:
-                            for event in pygame.event.get():
-                                pass
-                            button("GO TO MENU", button_pos_x//2, button_pos_y//5*2, button_width, button_height, green, bright_green, CURRENT, 1)
-                            button("QUIT", button_pos_x//2, button_pos_y//5*4, button_width, button_height, red, bright_red, CURRENT, 2)
+                        MakeText("PRESS SPACEBAR TO GO TO MENU", 100)
                 else:
+                    ret, img = camera.read()
+                    frame = video_setting(img)
+                    screen.blit(frame, (0,0))
                     STAGE.version = {1: np.random.choice(STAGE.ROUND_1),
                                      2: np.random.choice(STAGE.ROUND_2)}.get(STAGE.ROUND)
                     SUCCESS = False
@@ -279,40 +279,36 @@ def GAME1(CURRENT, PREV, B1, B2=None):
         elif FAIL:
             STAGE.version = {1: np.random.choice(STAGE.ROUND_1),
                              2: np.random.choice(STAGE.ROUND_2)}.get(STAGE.ROUND)
+            ret, img = camera.read()
+            frame = video_setting(img)
+            screen.blit(frame, (0,0))
             MakeText("FAIL", 115)
+
             if (time.time()-print_time) >= 5:
                 FAIL = False
                 PRINT_SUCCESS = False
-                ret, img = camera.read()
-                frame = video_setting(img)
-                screen.blit(frame, (0,0))
-                while True:
-                    for event in pygame.event.get():
-                        pass
-                    if button("TRY AGAIN", button_pos_x//2, button_pos_y//5*2, button_width, button_height, green, bright_green):
-                        break
-                    button("QUIT", button_pos_x//2, button_pos_y//5*4, button_width, button_height, red, bright_red, CURRENT, 2)
 
-                    pygame.display.flip()
+                pygame.display.flip()
 
         pygame.display.flip()
         clock.tick(30)
 
 
-def GAME2(CURRENT, PREV):
+def GAME2():
     QUIT()
-
-MENU = {0: INTRO, 1: PAUSE, 2: QUIT, 3: CHOOSE_GAME, 4: GAME1, 5: GAME2}
 
 def main():
     try:
         CURRENT = 0
         PREV = 0
-        START = pygame.image.load("./image/b_01_start.png")
-        while True:
-            screen.fill(white)
-            num_where = np.argmax(MENU_LIST)
-            MENU[num_where](CURRENT, PREV, START)
+        screen.fill(white)
+        INTRO()
+
+        for event in pygame.event.get() :
+            if event.type == pygame.KEYDOWN :
+                if event.key == pygame.K_q:
+                    QUIT()
+
 
     except KeyboardInterrupt or SystemExit :
         QUIT()
