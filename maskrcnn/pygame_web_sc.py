@@ -222,8 +222,6 @@ def GAME1(CURRENT, PREV, B1, B2=None):
                     READY = True
                 if event.key == pygame.K_p :
                     PAUSE()
-                    if MENU_LIST[2]:
-                        QUIT()
 
         if not READY:
             if NO_PERSON:
@@ -308,7 +306,20 @@ def main():
     try:
         CURRENT = 0
         PREV = 0
-        START = pygame.image.load("./image/b_01_start.png")
+        # buttom
+        START_norm = pygame.image.load("./image/b_01_start.png")
+        START_high = pygame.image.load("./image/b_01_start.png")    # need to edit
+        QUIT_norm =
+        QUIT_high =
+        GAME1_norm = pygame.image.load("./image/b_02_1.png")
+        GAME1_high = pygame.image.load("./image/b_02_1.png")    # need to edit
+        GAME2_norm = pygame.image.load("./image/b_02_2.png")
+        GAME2_high = pygame.image.load("./image/b_02_2.png")    # need to edit
+        CONTINUE_norm = pygame.image.load("./image/b_04_continue.png")
+        CONTINUE_high = pygame.image.load("./image/b_04_continue.png")  # need to edit
+        HEY = pygame.image.load("./image/b_05_1_hey.png")
+        READY_img = pygame.image.load("./image/b_05_2_ready.png")
+        LOADING = pygame.image.load("./image/b_05_3_loading.png")
         while True:
             screen.fill(white)
             num_where = np.argmax(MENU_LIST)
