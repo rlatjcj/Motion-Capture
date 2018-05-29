@@ -52,7 +52,7 @@ class DETERMINE_STAGE():
                              ((self.width-rect_width)//2,
                              self.height-rect_height,
                              rect_width,
-                             rect_height), 2)
+                             rect_height), 5)
 
             return img
 
@@ -79,7 +79,7 @@ class DETERMINE_STAGE():
                              ((self.width-rect_width)//2,
                              self.height-rect_height,
                              rect_width,
-                             rect_height), 2)
+                             rect_height), 5)
 
             return img
 
@@ -105,7 +105,7 @@ class DETERMINE_STAGE():
                              ((self.width-rect_width)//2,
                              self.height-rect_height,
                              rect_width,
-                             rect_height), 2)
+                             rect_height), 5)
 
             return img
 
