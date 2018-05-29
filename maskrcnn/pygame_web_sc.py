@@ -307,6 +307,9 @@ def main():
         CURRENT = 0
         PREV = 0
         # buttom
+        import os
+        os.getcwd()
+        os.chdir("maskrcnn/")
         START_norm = pygame.image.load("./image/b_01_start.png")
         START_high = pygame.image.load("./image/b_01_start.png")    # need to edit
         #QUIT_norm =
@@ -320,10 +323,13 @@ def main():
         HEY = pygame.image.load("./image/b_05_1_hey.png")
         READY_img = pygame.image.load("./image/b_05_2_ready.png")
         LOADING = pygame.image.load("./image/b_05_3_loading.png")
+        IMG_DICT = {0: (START_norm, START_high, QUIT_norm, QUIT_high),
+                    1: (CONTINUE_norm, CONTINUE_high, QUIT_norm, QUIT_high),
+                    3: (GAME1_norm, GAME1_high, GAME2_norm, GAME2_high)}
         while True:
             screen.fill(white)
             num_where = np.argmax(MENU_LIST)
-            MENU[num_where](CURRENT, PREV, START_norm, START_high)
+            MENU[num_where](CURRENT, PREV, IMG_DICT[num_where][0], IMG_DICT[num_where][1], IMG_DICT[num_where][2], IMG_DICT[num_where][3])
 
     except KeyboardInterrupt or SystemExit :
         QUIT()
