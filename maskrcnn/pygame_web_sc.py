@@ -46,8 +46,8 @@ display_width = pygame.display.Info().current_w
 display_height = pygame.display.Info().current_h
 
 # button size to use
-button_width = 522
-button_height = 173
+button_width = display_width//3
+button_height = display_height//5
 
 #screen = pygame.display.set_mode([display_width, display_height], pygame.FULLSCREEN | pygame.NOFRAME | pygame.HWSURFACE, 32)
 screen = pygame.display.set_mode([display_width, display_height])
@@ -91,12 +91,12 @@ def text_objects(text, font) :
     return textSurface, textSurface.get_rect()
 
 
-def button(BUTTON, x, y, w, h, ic, ac, current=None, next=None) :
+def button(B_norm, B_high, x, y, w, h, ic, ac, current=None, next=None) :
     global MENU_LIST
     mouse = pygame.mouse.get_pos()
 
     if x+w > mouse[0] > x and y+h > mouse[1] > y :
-        screen.blit(BUTTON, (x, y))
+        screen.blit(B_norm, (x, y))
         #pygame.draw.rect(screen, ac, (x,y,w,h)) # 장소, action_color, top left w, h
         for event in pygame.event.get():
             if event.type == MOUSEBUTTONUP and event.button == 1:
@@ -105,7 +105,7 @@ def button(BUTTON, x, y, w, h, ic, ac, current=None, next=None) :
                 if current == None:
                     return True
     else :
-        screen.blit(BUTTON, (x, y))
+        screen.blit(B_high, (x, y))
         #pygame.draw.rect(screen, ic, (x,y,w,h)) # 장소, inaction_color, top left w, h
 
 
@@ -118,12 +118,12 @@ def video_setting(frame):
     return frame
 
 
-def INTRO(CURRENT, PREV, B1, B2=None):
+def INTRO(CURRENT, PREV, B1_norm, B1_high, B2_norm, B2_high):
     PREV = CURRENT
     CURRENT = 0
     #screen.blit(B1, (button_pos_x//2,button_pos_y//5*2))
-    button(B1, button_pos_x//2, button_pos_y//5*2, button_width, button_height, green, bright_green, CURRENT, 3)
-    button(B1, button_pos_x//2, button_pos_y//5*4, button_width, button_height, red, bright_red, CURRENT, 2)
+    button(B1_norm, B1_high, button_pos_x//2, button_pos_y//5*2, button_width, button_height, green, bright_green, CURRENT, 3)
+    button(B2_norm, B2_high, button_pos_x//2, button_pos_y//5*4, button_width, button_height, red, bright_red, CURRENT, 2)
 
     for event in pygame.event.get() :
         if event.type == pygame.KEYDOWN :
@@ -155,11 +155,11 @@ def QUIT() :
     quit()
 
 
-def CHOOSE_GAME(CURRENT, PREV, B1, B2=None):
+def CHOOSE_GAME(CURRENT, PREV, B1_norm, B1_high, B2_norm, B2_high):
     PREV = CURRENT
     CURRENT = 3
-    button(B1, button_pos_x//2, button_pos_y//5*2, button_width, button_height, green, bright_green, CURRENT, 4)
-    button(B1, button_pos_x//2, button_pos_y//5*4, button_width, button_height, red, bright_red, CURRENT, 5)
+    button(B1_norm, B1_high, button_pos_x//2, button_pos_y//5*2, button_width, button_height, green, bright_green, CURRENT, 4)
+    button(B2_norm, B2_high, button_pos_x//2, button_pos_y//5*4, button_width, button_height, red, bright_red, CURRENT, 5)
 
     for event in pygame.event.get() :
         if event.type == pygame.KEYDOWN :
@@ -172,7 +172,7 @@ def CHOOSE_GAME(CURRENT, PREV, B1, B2=None):
 
     pygame.display.flip()
 
-def GAME1(CURRENT, PREV, B1, B2=None):
+def GAME1(CURRENT, PREV, B1_norm, B1_high, B2_norm, B2_high):
     global screen, display_width, display_height
     PREV = CURRENT
     CURRENT = 4
@@ -309,8 +309,8 @@ def main():
         # buttom
         START_norm = pygame.image.load("./image/b_01_start.png")
         START_high = pygame.image.load("./image/b_01_start.png")    # need to edit
-        QUIT_norm =
-        QUIT_high =
+        #QUIT_norm =
+        #QUIT_high =
         GAME1_norm = pygame.image.load("./image/b_02_1.png")
         GAME1_high = pygame.image.load("./image/b_02_1.png")    # need to edit
         GAME2_norm = pygame.image.load("./image/b_02_2.png")
@@ -323,7 +323,7 @@ def main():
         while True:
             screen.fill(white)
             num_where = np.argmax(MENU_LIST)
-            MENU[num_where](CURRENT, PREV, START)
+            MENU[num_where](CURRENT, PREV, START_norm, START_high)
 
     except KeyboardInterrupt or SystemExit :
         QUIT()
