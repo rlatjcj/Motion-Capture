@@ -36,7 +36,7 @@ class DETERMINE_STAGE():
             seg_height = img.shape[0]
             seg_width = img.shape[1]
             rect_width = seg_width * 3 // 5
-            rect_height = seg_height * 9 // 10
+            rect_height = seg_height * 4 // 5
             bounding = cv2.rectangle(np.zeros((seg_height, seg_width), dtype=np.uint8),
                         ((seg_width-rect_width)//2, seg_height-rect_height),
                         ((seg_width+rect_width)//2, seg_height), BOUNDING_COLOR, -1)
