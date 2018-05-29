@@ -49,8 +49,8 @@ display_height = pygame.display.Info().current_h
 button_width = display_width//3
 button_height = display_height//5
 
-#screen = pygame.display.set_mode([display_width, display_height], pygame.FULLSCREEN | pygame.NOFRAME | pygame.HWSURFACE, 32)
-screen = pygame.display.set_mode([display_width, display_height])
+screen = pygame.display.set_mode([display_width, display_height], pygame.FULLSCREEN | pygame.NOFRAME | pygame.HWSURFACE, 32)
+#screen = pygame.display.set_mode([display_width, display_height])
 clock = pygame.time.Clock()
 
 # button position
@@ -63,12 +63,36 @@ button_pos_y = display_height-button_height
 #pygame.mixer.music.load(music_path+"Kim Ximya X D. Sanders - Process.mp3")
 #crash_sound = pygame.mixer.Sound()
 
+# buttom
+START_norm = pygame.image.load("./image/b_01_start.png")
+START_high = pygame.image.load("./image/bb_01_start.png")
+QUIT_norm = pygame.image.load("./image/b_03_quit.png")
+QUIT_high = pygame.image.load("./image/bb_03_quit.png")
+
+GAME1_norm = pygame.image.load("./image/b_02_1.png")
+GAME1_high = pygame.image.load("./image/bb_02_1.png")
+GAME2_norm = pygame.image.load("./image/b_02_2.png")
+GAME2_high = pygame.image.load("./image/bb_02_2.png")
+
+CONTINUE_norm = pygame.image.load("./image/b_04_continue.png")
+CONTINUE_high = pygame.image.load("./image/bb_04_continue.png")
+
+HEY = pygame.image.load("./image/b_05_1_hey.png")
+READY_img = pygame.image.load("./image/b_05_2_ready.png")
+LOADING = pygame.image.load("./image/b_05_3_loading.png")
+YES_norm = pygame.image.load("./image/b_06_y.png")
+YES_high = pygame.image.load("./image/bb_06_yes.png")
+NO_norm = pygame.image.load("./image/b_06_n.png")
+NO_high = pygame.image.load("./image/bb_06_no.png")
+
+IMG_DICT = {0: (START_norm, START_high, QUIT_norm, QUIT_high),
+            1: (GAME1_norm, GAME1_high, GAME2_norm, GAME2_high),
+            2: (HEY, READY_img, LOADING, YES_norm, YES_high, NO_norm, NO_high)}
+
 
 # =============================================================================
 # function
 # =============================================================================
-
-MENU_LIST = np.array((True, False, False, False, False, False))
 
 def MakeText(msg, size, text=True, x=None, y=None, w=None, h=None, font='freesansbold.ttf'):
     Text = pygame.font.Font(font, size) # font & size
@@ -85,28 +109,42 @@ def MakeText(msg, size, text=True, x=None, y=None, w=None, h=None, font='freesan
 
 
 def text_objects(text, font) :
-    # pass trough text, font
     textSurface = font.render(text, True, black)
-    # get_rect() : rectecgular area of the surface
     return textSurface, textSurface.get_rect()
+
+def button_pose_quit(B_norm, B_high, x, y, w, h, ic, ac, action = None) :
+    LEFT = 1
+    mouse = pygame.mouse.get_pos()
+    click = pygame.mouse.get_pressed()
+
+    if x+w > mouse[0] > x and y+h > mouse[1] > y :
+        screen.blit(B_high, (x, y))
+        for event in pygame.event.get():
+            if click[0] == LEFT :
+                if event.type == pygame.MOUSEBUTTONUP :
+                    action()
+                    pygame.display.update()
+
+    else :
+        screen.blit(B_norm, (x, y))
+
 
 
 def button(B_norm, B_high, x, y, w, h, ic, ac, current=None, next=None) :
     global MENU_LIST
+    LEFT = 1
     mouse = pygame.mouse.get_pos()
+    click = pygame.mouse.get_pressed()
 
     if x+w > mouse[0] > x and y+h > mouse[1] > y :
         screen.blit(B_high, (x, y))
-        #pygame.draw.rect(screen, ac, (x,y,w,h)) # 장소, action_color, top left w, h
         for event in pygame.event.get():
-            if event.type == MOUSEBUTTONUP and event.button == 1:
-                MENU_LIST[current] = False
-                MENU_LIST[next] = True
-                if current == None:
-                    return True
+            if click[0] == LEFT :
+                if event.type == pygame.MOUSEBUTTONUP :
+                    MENU_LIST[current] = False
+                    MENU_LIST[next] = True
     else :
         screen.blit(B_norm, (x, y))
-        #pygame.draw.rect(screen, ic, (x,y,w,h)) # 장소, inaction_color, top left w, h
 
 
 def video_setting(frame):
@@ -121,34 +159,37 @@ def video_setting(frame):
 def INTRO(CURRENT, PREV, B1_norm, B1_high, B2_norm, B2_high):
     PREV = CURRENT
     CURRENT = 0
-    #screen.blit(B1, (button_pos_x//2,button_pos_y//5*2))
-    button(B1_norm, B1_high, button_pos_x//2, button_pos_y*2//7, button_width, button_height, green, bright_green, CURRENT, 3)
-    button(B2_norm, B2_high, button_pos_x//2, button_pos_y*5//7, button_width, button_height, red, bright_red, CURRENT, 2)
-
-    for event in pygame.event.get() :
-        if event.type == pygame.KEYDOWN :
-            if event.key == pygame.K_p :
-                screen.fill(white)
-                PAUSE()
-
-    # Game name display
-    #MakeText("MOTION GAME", 115, False)
+    BUTTON_SHAPE = pygame.surfarray.array2d(B1_norm).shape
+    button(B1_norm, B1_high, (display_width-BUTTON_SHAPE[0])//2, (display_height-BUTTON_SHAPE[1])*2//7, BUTTON_SHAPE[0], BUTTON_SHAPE[1], green, bright_green, CURRENT, 1)
+    button_pose_quit(B2_norm, B2_high, (display_width-BUTTON_SHAPE[0])//2, (display_height-BUTTON_SHAPE[1])*5//7, BUTTON_SHAPE[0], BUTTON_SHAPE[1], red, bright_red, QUIT)
 
     pygame.display.flip()
 
 
 def PAUSE() :
     #pygame.mixer.music.pause() # music pause
+    global pause
     pause = True
-    while pause:
-        for event in pygame.event.get():
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_p:
-                    pause = False
+    BUTTON_SHAPE = pygame.surfarray.array2d(CONTINUE_norm).shape
 
-        MakeText("PAUSED", 115)
+    while pause :
+        MakeText("PAUSE", 200, False)
+        button_pose_quit(CONTINUE_norm, CONTINUE_high, (display_width-BUTTON_SHAPE[0])//2, (display_height-BUTTON_SHAPE[1])*2//7, BUTTON_SHAPE[0], BUTTON_SHAPE[1], green, bright_green, UNPAUSE)
+        button_pose_quit(QUIT_norm, QUIT_high, (display_width-BUTTON_SHAPE[0])//2, (display_height-BUTTON_SHAPE[1])*5//7, BUTTON_SHAPE[0], BUTTON_SHAPE[1], red, bright_red, QUIT)
+
+        for event in pygame.event.get() :
+            if event.type == pygame.KEYDOWN :
+                if event.key == pygame.K_q:
+                    QUIT()
+                if event.key == pygame.K_p:
+                    pause = not pause
+
         pygame.display.update()
 
+def UNPAUSE() :
+    global pause
+    #pygame.mixer.music.unpause()
+    pause = False
 
 def QUIT() :
     pygame.quit()
@@ -157,25 +198,17 @@ def QUIT() :
 
 def CHOOSE_GAME(CURRENT, PREV, B1_norm, B1_high, B2_norm, B2_high):
     PREV = CURRENT
-    CURRENT = 3
-    button(B1_norm, B1_high, button_pos_x//2, button_pos_y*2//7, button_width, button_height, green, bright_green, CURRENT, 4)
-    button(B2_norm, B2_high, button_pos_x//2, button_pos_y*5//7, button_width, button_height, red, bright_red, CURRENT, 5)
-
-    for event in pygame.event.get() :
-        if event.type == pygame.KEYDOWN :
-            if event.key == pygame.K_p :
-                screen.fill(white)
-                PAUSE()
-
-    # Game name display
-    #MakeText("CHOOSE GAME", 115, False)
+    CURRENT = 1
+    BUTTON_SHAPE = pygame.surfarray.array2d(B1_norm).shape
+    button(B1_norm, B1_high, (display_width-BUTTON_SHAPE[0])//2, (display_height-BUTTON_SHAPE[1])*2//7, BUTTON_SHAPE[0], BUTTON_SHAPE[1], green, bright_green, CURRENT, 2)
+    button(B2_norm, B2_high, (display_width-BUTTON_SHAPE[0])//2, (display_height-BUTTON_SHAPE[1])*5//7, BUTTON_SHAPE[0], BUTTON_SHAPE[1], red, bright_red, CURRENT, 3)
 
     pygame.display.flip()
 
 def GAME1(CURRENT, PREV, HEY, READY_img, LOADING, YES_norm, YES_high, NO_norm, NO_high):
     global screen, display_width, display_height
     PREV = CURRENT
-    CURRENT = 4
+    CURRENT = 2
 
     # LOADING...
     LOADING_SHAPE = pygame.surfarray.array2d(LOADING).shape
@@ -280,8 +313,8 @@ def GAME1(CURRENT, PREV, HEY, READY_img, LOADING, YES_norm, YES_high, NO_norm, N
                         while (time.time()-print_time) <= 20:
                             for event in pygame.event.get():
                                 pass
-                            button("GO TO MENU", button_pos_x//2, button_pos_y//5*2, button_width, button_height, green, bright_green, CURRENT, 3)
-                            button("QUIT", button_pos_x//2, button_pos_y//5*4, button_width, button_height, red, bright_red, CURRENT, 2)
+                            #button("GO TO MENU", button_pos_x//2, button_pos_y//5*2, button_width, button_height, green, bright_green, CURRENT, 3)
+                            button_pose_quit(NO_norm, NO_high, button_pos_x//2, button_pos_y//5*4, button_width, button_height, red, bright_red, QUIT)
                 else:
                     STAGE.version = {1: np.random.choice(STAGE.ROUND_1),
                                      2: np.random.choice(STAGE.ROUND_2)}.get(STAGE.ROUND)
@@ -292,6 +325,7 @@ def GAME1(CURRENT, PREV, HEY, READY_img, LOADING, YES_norm, YES_high, NO_norm, N
                 MakeText("SUCCESS", 115)
 
         elif FAIL:
+            screen.blit(frame, (0,0))
             STAGE.version = {1: np.random.choice(STAGE.ROUND_1),
                              2: np.random.choice(STAGE.ROUND_2)}.get(STAGE.ROUND)
             MakeText("FAIL", 115)
@@ -304,58 +338,39 @@ def GAME1(CURRENT, PREV, HEY, READY_img, LOADING, YES_norm, YES_high, NO_norm, N
                 while (time.time()-print_time) <= 15:
                     for event in pygame.event.get():
                         pass
-                    if button(YES_norm, YES_high, button_pos_x//2, button_pos_y//5*2, button_width, button_height, green, bright_green):
-                        break
-                    button(NO_norm, NO_high, button_pos_x//2, button_pos_y//5*4, button_width, button_height, red, bright_red, CURRENT, 2)
-
-
+                    #button(YES_norm, YES_high, button_pos_x//2, button_pos_y//5*2, button_width, button_height, green, bright_green)
+                    button_pose_quit(NO_norm, NO_high, button_pos_x//2, button_pos_y//5*4, button_width, button_height, red, bright_red, QUIT)
 
         pygame.display.flip()
-        clock.tick(30)
 
 
 def GAME2(CURRENT, PREV):
     QUIT()
 
-MENU = {0: INTRO, 1: PAUSE, 2: QUIT, 3: CHOOSE_GAME, 4: GAME1, 5: GAME2}
+MENU_LIST = np.array((True, False, False, False))
+MENU = {0: INTRO, 1: CHOOSE_GAME, 2: GAME1, 3: GAME2}
 
 def main():
     try:
         CURRENT = 0
         PREV = 0
-        # buttom
-        START_norm = pygame.image.load("./image/b_01_start.png")
-        START_high = pygame.image.load("./image/bb_01_start.png")
-        QUIT_norm = pygame.image.load("./image/b_03_quit.png")
-        QUIT_high = pygame.image.load("./image/bb_03_quit.png")
 
-        GAME1_norm = pygame.image.load("./image/b_02_1.png")
-        GAME1_high = pygame.image.load("./image/bb_02_1.png")
-        GAME2_norm = pygame.image.load("./image/b_02_2.png")
-        GAME2_high = pygame.image.load("./image/bb_02_2.png")
-
-        CONTINUE_norm = pygame.image.load("./image/b_04_continue.png")
-        CONTINUE_high = pygame.image.load("./image/bb_04_continue.png")
-
-        HEY = pygame.image.load("./image/b_05_1_hey.png")
-        READY_img = pygame.image.load("./image/b_05_2_ready.png")
-        LOADING = pygame.image.load("./image/b_05_3_loading.png")
-        YES_norm = pygame.image.load("./image/b_06_y.png")
-        YES_high = pygame.image.load("./image/bb_06_yes.png")
-        NO_norm = pygame.image.load("./image/b_06_n.png")
-        NO_high = pygame.image.load("./image/bb_06_no.png")
-        IMG_DICT = {0: (START_norm, START_high, QUIT_norm, QUIT_high),
-                    1: (CONTINUE_norm, CONTINUE_high, QUIT_norm, QUIT_high),
-                    3: (GAME1_norm, GAME1_high, GAME2_norm, GAME2_high),
-                    4: (HEY, READY_img, LOADING, YES_norm, YES_high, NO_norm, NO_high)}
         while True:
             screen.fill(white)
             num_where = np.argmax(MENU_LIST)
-            if num_where == 4 or num_where == 5:
+            if num_where == 2 or num_where == 3:
                 MENU[num_where](CURRENT, PREV, IMG_DICT[num_where][0], IMG_DICT[num_where][1], IMG_DICT[num_where][2],
                                 IMG_DICT[num_where][3], IMG_DICT[num_where][4], IMG_DICT[num_where][5], IMG_DICT[num_where][6])
             else:
                 MENU[num_where](CURRENT, PREV, IMG_DICT[num_where][0], IMG_DICT[num_where][1], IMG_DICT[num_where][2], IMG_DICT[num_where][3])
+
+            for event in pygame.event.get() :
+                if event.type == pygame.KEYDOWN :
+                    if event.key == pygame.K_q:
+                        QUIT()
+                    if event.key == pygame.K_p:
+                        screen.fill(white)
+                        PAUSE(PAUSE_PRINT, CONTINUE_norm, CONTINUE_high, QUIT_norm, QUIT_high)
 
     except KeyboardInterrupt or SystemExit :
         QUIT()
