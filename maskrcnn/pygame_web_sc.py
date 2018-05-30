@@ -6,7 +6,6 @@ import time
 import math
 import sys
 
-from image_load import *
 
 white = (255,255,255)
 cyan = (0,200,200)
@@ -46,7 +45,7 @@ time_five = pygame.mixer.Sound("./sound/5.wav")
 time_five.set_volume(1.5)
 
 #sound_list = ["time_five", "time_four", "time_three", "time_two", "time_one"]
-sound_dict = {0: time_five, 1: time_four, 2: time_three, 3: time_two, 4: time_one}
+sound_dict = {5: time_five, 4: time_four, 3: time_three, 2: time_two, 1: time_one}
 #pygame.mixer.music.play(-1, 0.0)
 #pygame.mixer.music.set_volume(0.7)
 
@@ -211,7 +210,6 @@ def PAUSE() :
             if event.type == pygame.KEYDOWN :
                 if event.key == pygame.K_q:
                     click_sound.play()
-                    screen.fill(white)
                     QUIT()
                 if event.key == pygame.K_p:
                     click_sound.play()
@@ -230,7 +228,6 @@ def REGAME(FLAG, frame):
         screen.blit(frame, (0,0))
         MakeText("{}".format(math.ceil(10-(time.time()-start))), 200)
         if time.time()-start >= 10:
-            screen.fill(white)
             QUIT()
 
         if FLAG == "FAIL":
@@ -328,6 +325,8 @@ def GAME1(CURRENT, PREV):
                     click_sound.play()
                     start = time.time()
                     READY = True
+                    TIMER = True
+                    timer_sound = 6
                 if event.key == pygame.K_p :
                     click_sound.play()
                     PAUSE()
@@ -346,7 +345,8 @@ def GAME1(CURRENT, PREV):
                 screen.blit(READY_PRINT, ((display_width-READY_PRINT_SHAPE[0])//2,(display_height-READY_PRINT_SHAPE[1])//2))
         else:
             if TIME_STAGE-(time.time()-start) <= 0.01:
-                timer = "{}".format(math.ceil(TIME_INIT-(time.time()-start-TIME_STAGE)))
+                timer = math.ceil(TIME_INIT-(time.time()-start-TIME_STAGE))
+
                 if float(timer) <= 0.01:
                     SUCCESS, FAIL = SegImg(img, READY, STAGE)
                     if not SUCCESS and not FAIL:
@@ -356,12 +356,13 @@ def GAME1(CURRENT, PREV):
                     print_time = time.time()
 
                 screen = STAGE.determine_stage(screen, False)
+                if timer_sound-timer == 1:
+                    timer_sound = timer
+                    if timer != 0:
+                        sound_dict[timer].play()
 
-                MakeText(timer, 200)
+                MakeText("{}".format(timer), 200)
 
-                global step
-                if timer == step :
-                    sound_dict[i].play()
 
             else:
                 screen.blit(STAGE_DICT[STAGE.ROUND], ((display_width-STAGE_SHAPE[0])//2,(display_height-STAGE_SHAPE[1])//2))
@@ -416,7 +417,6 @@ def GAME1(CURRENT, PREV):
 
 
 def GAME2(CURRENT, PREV):
-    screen.fill(white)
     QUIT()
 
 MENU_LIST = np.array((True, False, False, False))
@@ -437,11 +437,9 @@ def main():
                 if event.type == pygame.KEYDOWN :
                     if event.key == pygame.K_q:
                         click_sound.play()
-                        screen.fill(white)
                         QUIT()
                     if event.key == pygame.K_p:
                         click_sound.play()
-                        screen.fill(white)
                         PAUSE()
 
     except KeyboardInterrupt or SystemExit :
