@@ -1,9 +1,3 @@
-
-# 76, 146 line for playing music
-
-# =============================================================================
-# Import library
-# =============================================================================
 import pygame
 from pygame.locals import *
 import cv2
@@ -13,21 +7,28 @@ import math
 import sys
 from moviepy.editor import VideoFileClip
 
+from image_load import *
+
 white = (255,255,255)
 cyan = (0,200,200)
 
+<<<<<<< HEAD
 # initialize video parameters
 VIDEO = "./image/data.mp4"
 #VIDEO = 0
+=======
+>>>>>>> 5ede0539a23ec8717c535f5f40a2e40d688de688
 # =============================================================================
 # camera load
 # =============================================================================
+VIDEO = 0
 camera = cv2.VideoCapture(VIDEO)
 
 
 # =============================================================================
 # pygame, display, music initialize
 # =============================================================================
+
 #initial
 pygame.init()
 pygame.display.set_caption("OpenCV camera stream on Pygame")
@@ -57,12 +58,10 @@ sound_list = ["time_five", "time_four", "time_three", "time_two", "time_one"]
 #pygame.mixer.music.play(-1, 0.0)
 #pygame.mixer.music.set_volume(0.7)
 
-# button size to use
-button_width = display_width//3
-button_height = display_height//5
-
+# for fullscreen
 screen = pygame.display.set_mode([display_width, display_height], pygame.FULLSCREEN | pygame.NOFRAME | pygame.HWSURFACE, 32)
 #screen = pygame.display.set_mode([display_width, display_height])
+<<<<<<< HEAD
 clock = pygame.time.Clock()
 # button position
 button_pos_x = display_width-button_width
@@ -73,32 +72,9 @@ button_pos_y = display_height-button_height
 #music_path = "./music/" # music folder
 #pygame.mixer.music.load(music_path+"Kim Ximya X D. Sanders - Process.mp3")
 #crash_sound = pygame.mixer.Sound()
+=======
+>>>>>>> 5ede0539a23ec8717c535f5f40a2e40d688de688
 
-# buttom
-START_norm = pygame.image.load("./image/b_01_start.png")
-START_high = pygame.image.load("./image/bb_01_start.png")
-QUIT_norm = pygame.image.load("./image/b_03_quit.png")
-QUIT_high = pygame.image.load("./image/bb_03_quit.png")
-
-GAME1_norm = pygame.image.load("./image/b_02_1.png")
-GAME1_high = pygame.image.load("./image/bb_02_1.png")
-GAME2_norm = pygame.image.load("./image/b_02_2.png")
-GAME2_high = pygame.image.load("./image/bb_02_2.png")
-
-CONTINUE_norm = pygame.image.load("./image/b_04_continue.png")
-CONTINUE_high = pygame.image.load("./image/bb_04_continue.png")
-
-YES_norm = pygame.image.load("./image/b_06_y.png")
-YES_high = pygame.image.load("./image/bb_06_yes.png")
-NO_norm = pygame.image.load("./image/b_06_n.png")
-NO_high = pygame.image.load("./image/bb_06_no.png")
-
-BUTTON_SHAPE = pygame.surfarray.array2d(START_norm).shape
-
-QUIT_IMAGE = pygame.image.load("./image/p_13_2_end.png")
-QUIT_IMAGE_SHAPE = pygame.surfarray.array2d(QUIT_IMAGE).shape
-QUIT_MENTION = pygame.image.load("./image/p_13_1_end.png")
-QUIT_MENTION_SHAPE = pygame.surfarray.array2d(QUIT_MENTION).shape
 
 # =============================================================================
 # function
@@ -121,6 +97,7 @@ def text_objects(text, font) :
     textSurface = font.render(text, True, cyan)
     return textSurface, textSurface.get_rect()
 
+
 def button_pose_quit(B_norm, B_high, x, y, w, h, action = None) :
     LEFT = 1
     mouse = pygame.mouse.get_pos()
@@ -137,6 +114,7 @@ def button_pose_quit(B_norm, B_high, x, y, w, h, action = None) :
 
     else :
         screen.blit(B_norm, (x, y))
+
 
 def button(B_norm, B_high, x, y, w, h, current=None, next=None) :
     global MENU_LIST
@@ -180,7 +158,7 @@ def PAUSE() :
     pause = True
 
     while pause :
-        MakeText("PAUSE", 200)
+        screen.blit(PAUSE_PRINT, ((display_width-PAUSE_PRINT_SHAPE[0])//2, PAUSE_PRINT_SHAPE[1]//4))
         button_pose_quit(CONTINUE_norm, CONTINUE_high, (display_width-BUTTON_SHAPE[0])//2, (display_height-BUTTON_SHAPE[1])*2//7, BUTTON_SHAPE[0], BUTTON_SHAPE[1], UNPAUSE)
         button_pose_quit(QUIT_norm, QUIT_high, (display_width-BUTTON_SHAPE[0])//2, (display_height-BUTTON_SHAPE[1])*5//7, BUTTON_SHAPE[0], BUTTON_SHAPE[1], QUIT)
 
@@ -210,13 +188,17 @@ def REGAME(FLAG, frame):
             QUIT()
 
         if FLAG == "FAIL":
-            button_pose_quit(YES_norm, YES_high, (display_width-BUTTON_SHAPE[0])//2, (display_height-BUTTON_SHAPE[1])*2//7, BUTTON_SHAPE[0], BUTTON_SHAPE[1], UNPAUSE)
-            button_pose_quit(NO_norm, NO_high, (display_width-BUTTON_SHAPE[0])//2, (display_height-BUTTON_SHAPE[1])*5//7, BUTTON_SHAPE[0], BUTTON_SHAPE[1], QUIT)
+            screen.blit(CHALLENGE_PRINT, ((display_width-CHALLENGE_PRINT_SHAPE[0])*3//4, (display_height-CHALLENGE_PRINT_SHAPE[1])*2//7))
+            screen.blit(CHALLENGE_IMAGE, ((display_width-CHALLENGE_IMAGE_SHAPE[0])//4, (display_height-CHALLENGE_IMAGE_SHAPE[1])*4//7))
+            button_pose_quit(YES_norm, YES_high, (display_width-BUTTON_SHAPE[0])//4, (display_height-BUTTON_SHAPE[1])*6//7, BUTTON_SHAPE[0], BUTTON_SHAPE[1], UNPAUSE)
+            button_pose_quit(NO_norm, NO_high, (display_width-BUTTON_SHAPE[0])*3//4, (display_height-BUTTON_SHAPE[1])*6//7, BUTTON_SHAPE[0], BUTTON_SHAPE[1], QUIT)
         else:
-            button_pose_quit(YES_norm, YES_high, (display_width-BUTTON_SHAPE[0])//2, (display_height-BUTTON_SHAPE[1])*2//7, BUTTON_SHAPE[0], BUTTON_SHAPE[1], UNPAUSE)
+            button_pose_quit(FIRSTTIME_norm, FIRSTTIME_high, (display_width-BUTTON_SHAPE[0])//4, (display_height-BUTTON_SHAPE[1])*6//7, BUTTON_SHAPE[0], BUTTON_SHAPE[1], UNPAUSE)
             if not pause:
                 return True
-            button_pose_quit(NO_norm, NO_high, (display_width-BUTTON_SHAPE[0])//2, (display_height-BUTTON_SHAPE[1])*5//7, BUTTON_SHAPE[0], BUTTON_SHAPE[1], QUIT)
+            button_pose_quit(RESTART_norm, RESTART_high, (display_width-BUTTON_SHAPE[0])*3//4, (display_height-BUTTON_SHAPE[1])*6//7, BUTTON_SHAPE[0], BUTTON_SHAPE[1], UNPAUSE)
+            if not pause:
+                return False
 
         for event in pygame.event.get() :
             if event.type == pygame.KEYDOWN :
@@ -258,6 +240,7 @@ def GAME1(CURRENT, PREV):
     global screen, display_width, display_height
     PREV = CURRENT
     CURRENT = 2
+<<<<<<< HEAD
     pygame.mixer.music.fadeout(2000)
     # load images for GAME1
     FIT_POSE = pygame.image.load("./image/p_00_position.png")
@@ -280,6 +263,8 @@ def GAME1(CURRENT, PREV):
     SUCCESS_IMAGE_SHAPE = pygame.surfarray.array2d(SUCCESS_IMAGE).shape
     ROUND_CLEAR_PRINT = pygame.image.load("./image/p_09_clear_word.png")
     ROUND_CLEAR_PRINT_SHAPE = pygame.surfarray.array2d(ROUND_CLEAR_PRINT).shape
+=======
+>>>>>>> 5ede0539a23ec8717c535f5f40a2e40d688de688
 
     # LOADING...
     screen.fill(white)
@@ -295,13 +280,6 @@ def GAME1(CURRENT, PREV):
     FAIL = False
     PRINT_SUCCESS = False
     NO_PERSON = False
-
-    # load images about stages
-    STAGE_1 = pygame.image.load("./image/pb_07_1_1.png")
-    STAGE_2 = pygame.image.load("./image/pb_07_1_2.png")
-    STAGE_3 = pygame.image.load("./image/pb_07_1_3.png")
-    STAGE_DICT = {1: STAGE_1, 2: STAGE_2, 3: STAGE_3}
-    STAGE_SHAPE = pygame.surfarray.array2d(STAGE_1).shape
 
     # for initializing
     from segmentation import SegImg
@@ -377,6 +355,12 @@ def GAME1(CURRENT, PREV):
                         screen.blit(frame, (0,0))
                         menu = REGAME("SUCCESS", frame)
                         if menu:
+                            MENU_LIST[0] = True
+                            MENU_LIST[1] = False
+                            MENU_LIST[2] = False
+                            MENU_LIST[3] = False
+                            break
+                        else:
                             break
 
                 else:
@@ -422,10 +406,7 @@ def main():
             num_where = np.argmax(MENU_LIST)
             MENU[num_where](CURRENT, PREV)
 
-            if num_where == 2 or num_where == 3:
-                MENU_LIST[1] = True
-                MENU_LIST[2] = False
-                MENU_LIST[3] = False
+
 
             for event in pygame.event.get() :
                 if event.type == pygame.KEYDOWN :
