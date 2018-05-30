@@ -23,13 +23,14 @@ camera = cv2.VideoCapture(VIDEO)
 #initial
 pygame.init()
 pygame.display.set_caption("OpenCV camera stream on Pygame")
+clock = pygame.time.Clock()
 
 # Display for fullscreen
 display_width = pygame.display.Info().current_w
 display_height = pygame.display.Info().current_h
+
 #Sound
 pygame.mixer.music.load("./sound/bgm4.mp3")
-
 
 click_sound = pygame.mixer.Sound("./sound/click.wav")
 click_sound.set_volume(0.7)
@@ -180,10 +181,12 @@ def button(B_norm, B_high, x, y, w, h, current=None, next=None) :
         screen.blit(B_norm, (x, y))
 
 
-def video_setting(frame):
+def video_setting(frame, flag=False):
     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     frame = cv2.resize(frame, (display_width, display_height))
     frame = np.rot90(frame)
+    if flag:
+        frame = cv2.flip(frame, 0)
     frame = pygame.surfarray.make_surface(frame)
 
     return frame
@@ -420,6 +423,16 @@ MENU = {0: INTRO, 1: CHOOSE_GAME, 2: GAME1, 3: GAME2}
 
 def main():
     try:
+        intro = cv2.VideoCapture("./sound/kt_motion_intro.mp4")
+        while True:
+            ret, img = intro.read()
+            if not ret:
+                break
+            frame_intro = video_setting(img, True)
+            screen.blit(frame_intro, (0,0))
+            pygame.display.flip()
+            clock.tick(30)
+
         CURRENT = 0
         PREV = 0
         INTRO_MUSIC = True
