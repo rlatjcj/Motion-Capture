@@ -303,6 +303,8 @@ def GAME1(CURRENT, PREV):
     SegImg(img, READY, STAGE)
 
     FIT_time = time.time()
+    pygame.mixer.music.load("./sound/bgm3.mp3")
+    pygame.mixer.music.play(-1, 0.0)
 
 
     while True:
