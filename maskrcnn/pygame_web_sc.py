@@ -28,7 +28,7 @@ pygame.display.set_caption("OpenCV camera stream on Pygame")
 display_width = pygame.display.Info().current_w
 display_height = pygame.display.Info().current_h
 #Sound
-pygame.mixer.music.load("./sound/bgm2.mp3")
+pygame.mixer.music.load("./sound/bgm4.mp3")
 
 
 click_sound = pygame.mixer.Sound("./sound/click.wav")
@@ -93,6 +93,8 @@ FIRSTTIME_norm = pygame.image.load("./image/b_06_firsttime.png")
 FIRSTTIME_high = pygame.image.load("./image/bb_06_firsttime.png")
 RESTART_norm = pygame.image.load("./image/b_06_restart.png")
 RESTART_high = pygame.image.load("./image/bb_06_restart.png")
+RESTART_IMAGE = pygame.image.load("./image/p_06_restart.png")
+RESTART_IMAGE_SHAPE = pygame.surfarray.array2d(RESTART_IMAGE).shape
 
 BUTTON_SHAPE = pygame.surfarray.array2d(START_norm).shape
 
@@ -115,6 +117,8 @@ FAIL_PRINT = pygame.image.load("./image/p_10_fail_word.png")
 FAIL_PRINT_SHAPE = pygame.surfarray.array2d(FAIL_PRINT).shape
 SUCCESS_IMAGE = pygame.image.load("./image/p_09_success.png")
 SUCCESS_IMAGE_SHAPE = pygame.surfarray.array2d(SUCCESS_IMAGE).shape
+FAIL_IMAGE = pygame.image.load("./image/p_10_fail.png")
+FAIL_IMAGE_SHAPE = pygame.surfarray.array2d(FAIL_IMAGE).shape
 ROUND_CLEAR_PRINT = pygame.image.load("./image/p_09_clear_word.png")
 ROUND_CLEAR_PRINT_SHAPE = pygame.surfarray.array2d(ROUND_CLEAR_PRINT).shape
 
@@ -220,15 +224,11 @@ def PAUSE() :
 
 def REGAME(FLAG, frame):
     pygame.mixer.music.pause() # music pause
-    start = time.time()
     global pause
     pause = True
 
     while pause:
         screen.blit(frame, (0,0))
-        MakeText("{}".format(math.ceil(10-(time.time()-start))), 200)
-        if time.time()-start >= 10:
-            QUIT()
 
         if FLAG == "FAIL":
             screen.blit(CHALLENGE_PRINT, ((display_width-CHALLENGE_PRINT_SHAPE[0])*3//4, (display_height-CHALLENGE_PRINT_SHAPE[1])*2//7))
@@ -236,37 +236,27 @@ def REGAME(FLAG, frame):
             button_pose_quit(YES_norm, YES_high, (display_width-BUTTON_SHAPE[0])//4, (display_height-BUTTON_SHAPE[1])*6//7, BUTTON_SHAPE[0], BUTTON_SHAPE[1], UNPAUSE)
             button_pose_quit(NO_norm, NO_high, (display_width-BUTTON_SHAPE[0])*3//4, (display_height-BUTTON_SHAPE[1])*6//7, BUTTON_SHAPE[0], BUTTON_SHAPE[1], QUIT)
         else:
-            button_pose_quit(FIRSTTIME_norm, FIRSTTIME_high, (display_width-BUTTON_SHAPE[0])//4, (display_height-BUTTON_SHAPE[1])*6//7, BUTTON_SHAPE[0], BUTTON_SHAPE[1], UNPAUSE)
+            screen.blit(RESTART_IMAGE, ((display_width-RESTART_IMAGE_SHAPE[0])//2,(display_height-RESTART_IMAGE_SHAPE[1])//2))
+            button_pose_quit(FIRSTTIME_norm, FIRSTTIME_high, (display_width-BUTTON_SHAPE[0])*2//7, (display_height-BUTTON_SHAPE[1])*5//7, BUTTON_SHAPE[0], BUTTON_SHAPE[1], UNPAUSE)
             if not pause:
                 return True
-            button_pose_quit(RESTART_norm, RESTART_high, (display_width-BUTTON_SHAPE[0])*3//4, (display_height-BUTTON_SHAPE[1])*6//7, BUTTON_SHAPE[0], BUTTON_SHAPE[1], UNPAUSE)
+            button_pose_quit(RESTART_norm, RESTART_high, (display_width-BUTTON_SHAPE[0])*5//7, (display_height-BUTTON_SHAPE[1])*5//7, BUTTON_SHAPE[0], BUTTON_SHAPE[1], UNPAUSE)
             if not pause:
                 return False
-
-        for event in pygame.event.get() :
-            if event.type == pygame.KEYDOWN :
-                if event.key == pygame.K_p:
-                    click_sound.play()
-                    pause = not pause
-
 
         pygame.display.update()
 
 def UNPAUSE() :
     pygame.mixer.music.unpause()
     global pause
-    #pygame.mixer.music.unpause()
     pause = False
 
 def QUIT() :
-    '''
-    start = time.time()
-    while True:
-        if time.time()-start >= 5:
-            break
-        screen.blit(QUIT_IMAGE, (0,0))
-        screen.blit(QUIT_MENTION, ((display_width-QUIT_MENTION_SHAPE[0])//2, (display_height-QUIT_MENTION_SHAPE[1])//2))
-    '''
+    screen.fill(white)
+    #screen.blit(QUIT_IMAGE, (0,0))
+    #screen.blit(QUIT_MENTION, ((display_width-QUIT_MENTION_SHAPE[0])//2, (display_height-QUIT_MENTION_SHAPE[1])//2))
+
+    #time.sleep(5)
     pygame.quit()
     quit()
 
@@ -405,8 +395,8 @@ def GAME1(CURRENT, PREV):
             screen.blit(frame, (0,0))
             STAGE.version = {1: np.random.choice(STAGE.ROUND_1),
                              2: np.random.choice(STAGE.ROUND_2)}.get(STAGE.ROUND)
-            screen.blit(FAIL_PRINT, ((display_width-FAIL_PRINT_SHAPE[0])//2+300,FAIL_PRINT_SHAPE[1]//2))
-            screen.blit(SUCCESS_IMAGE, ((display_width-SUCCESS_IMAGE_SHAPE[0])//2-200,(display_height-SUCCESS_IMAGE_SHAPE[1])//2+100))
+            screen.blit(FAIL_PRINT, ((display_width-FAIL_PRINT_SHAPE[0])*3//4,(display_height-FAIL_PRINT_SHAPE[1])*2//7))
+            screen.blit(FAIL_IMAGE, ((display_width-FAIL_IMAGE_SHAPE[0])//2-200,(display_height-FAIL_IMAGE_SHAPE[1])//2+100))
             if (time.time()-print_time) >= 5:
                 FAIL = False
                 PRINT_SUCCESS = False
