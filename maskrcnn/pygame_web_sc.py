@@ -30,26 +30,25 @@ display_width = pygame.display.Info().current_w
 display_height = pygame.display.Info().current_h
 
 #Sound
-pygame.mixer.music.load("./sound/bgm4.mp3")
 
 click_sound = pygame.mixer.Sound("./sound/click.wav")
 click_sound.set_volume(0.7)
 time_one = pygame.mixer.Sound("./sound/1.wav")
-time_one.set_volume(1.5)
+time_one.set_volume(1)
 time_two = pygame.mixer.Sound("./sound/2.wav")
-time_two.set_volume(1.5)
+time_two.set_volume(1)
 time_three = pygame.mixer.Sound("./sound/3.wav")
-time_three.set_volume(1.5)
+time_three.set_volume(1)
 time_four = pygame.mixer.Sound("./sound/4.wav")
-time_four.set_volume(1.5)
+time_four.set_volume(1)
 time_five = pygame.mixer.Sound("./sound/5.wav")
-time_five.set_volume(1.5)
+time_five.set_volume(1)
 
 sound_dict = {5: time_five, 4: time_four, 3: time_three, 2: time_two, 1: time_one}
 
 # for fullscreen
-#screen = pygame.display.set_mode([display_width, display_height], pygame.FULLSCREEN | pygame.NOFRAME | pygame.HWSURFACE, 32)
-screen = pygame.display.set_mode([display_width, display_height])
+screen = pygame.display.set_mode([display_width, display_height], pygame.FULLSCREEN | pygame.NOFRAME | pygame.HWSURFACE, 32)
+#screen = pygame.display.set_mode([display_width, display_height])
 
 
 # INTRO
@@ -102,8 +101,12 @@ FIT_POSE = pygame.transform.scale(FIT_POSE, (display_width//2, display_height*4/
 FIT_SHAPE = pygame.surfarray.array2d(FIT_POSE).shape
 READY_PRINT = pygame.image.load("./image/b_05_2_ready.png")
 READY_PRINT_SHAPE = pygame.surfarray.array2d(READY_PRINT).shape
+READY_IMAGE = pygame.image.load("./image/p_05_ready_1.png")
+READY_IMAGE_SHAPE = pygame.surfarray.array2d(READY_IMAGE).shape
 LOADING = pygame.image.load("./image/b_05_3_loading.png")
 LOADING_SHAPE = pygame.surfarray.array2d(LOADING).shape
+LOADING_IMAGE = pygame.image.load("./image/p_05_ready_2.png")
+LOADING_IMAGE_SHAPE = pygame.surfarray.array2d(LOADING_IMAGE).shape
 FIT_PRINT = pygame.image.load("./image/p_00_position_1.png")
 FIT_PRINT_SHAPE = pygame.surfarray.array2d(FIT_PRINT).shape
 NOPERSON_PRINT = pygame.image.load("./image/p_00_position_2.png")
@@ -223,7 +226,6 @@ def PAUSE() :
         pygame.display.update()
 
 def REGAME(FLAG, frame):
-    pygame.mixer.music.pause() # music pause
     global pause
     pause = True
 
@@ -284,7 +286,8 @@ def GAME1(CURRENT, PREV):
 
     # LOADING...
     screen.fill(white)
-    screen.blit(LOADING, ((display_width-LOADING_SHAPE[0])//2,(display_height-LOADING_SHAPE[1])//2))
+    screen.blit(LOADING, ((display_width-LOADING_SHAPE[0])*2//3,(display_height-LOADING_SHAPE[1])//3))
+    screen.blit(LOADING_IMAGE, ((display_width-LOADING_IMAGE_SHAPE[0])//3,(display_height-LOADING_IMAGE_SHAPE[1])*2//3))
     pygame.display.flip()
 
     TIME_INIT = 5
@@ -306,14 +309,27 @@ def GAME1(CURRENT, PREV):
     SegImg(img, READY, STAGE)
 
     FIT_time = time.time()
-    pygame.mixer.music.load("./sound/bgm3.mp3")
-    pygame.mixer.music.play(-1, 0.0)
-
+    MUSIC_FLAG = True
 
     while True:
         ret, img = camera.read()
         if not ret:
             raise
+
+        if MUSIC_FLAG:
+            if STAGE.ROUND == 1:
+                pygame.mixer.music.load("./sound/game_bgm1.mp3")
+                pygame.mixer.music.play(-1, 0.0)
+                MUSIC_FLAG = False
+            elif STAGE.ROUND == 2:
+                screen.fill(white)
+                screen.blit(LOADING, ((display_width-LOADING_SHAPE[0])*2//3,(display_height-LOADING_SHAPE[1])//3))
+                screen.blit(LOADING_IMAGE, ((display_width-LOADING_IMAGE_SHAPE[0])//3,(display_height-LOADING_IMAGE_SHAPE[1])*2//3))
+                pygame.display.flip()
+                pygame.mixer.music.fadeout(1000)
+                pygame.mixer.music.load("./sound/game_bgm2.mp3")
+                pygame.mixer.music.play(-1, 0.0)
+                MUSIC_FLAG = False
 
         frame = video_setting(img)
         screen.blit(frame, (0,0))
@@ -341,7 +357,8 @@ def GAME1(CURRENT, PREV):
                 if TIME_INIT < time.time() - FIT_time:
                     FIT = False
             elif not SUCCESS and not FAIL:
-                screen.blit(READY_PRINT, ((display_width-READY_PRINT_SHAPE[0])//2,(display_height-READY_PRINT_SHAPE[1])//2))
+                screen.blit(READY_IMAGE, ((display_width-READY_IMAGE_SHAPE[0])//3,(display_height-READY_IMAGE_SHAPE[1])*2//3))
+                screen.blit(READY_PRINT, ((display_width-READY_PRINT_SHAPE[0])*2//3,(display_height-READY_PRINT_SHAPE[1])//3))
         else:
             if TIME_STAGE-(time.time()-start) <= 0.01:
                 timer = math.ceil(TIME_INIT-(time.time()-start-TIME_STAGE))
@@ -360,6 +377,7 @@ def GAME1(CURRENT, PREV):
                     if timer != 0:
                         sound_dict[timer].play()
 
+                pygame.mixer.music.set_volume(0.5)
                 MakeText("{}".format(timer), 200)
 
 
@@ -367,9 +385,11 @@ def GAME1(CURRENT, PREV):
                 screen.blit(STAGE_DICT[STAGE.ROUND], ((display_width-STAGE_SHAPE[0])//2,(display_height-STAGE_SHAPE[1])//2))
 
         if SUCCESS:
+            pygame.mixer.music.set_volume(1)
             screen.blit(frame, (0,0))
             if (time.time()-print_time) >= 5:
                 STAGE.ROUND += 1
+                MUSIC_FLAG = True
                 if STAGE.ROUND > STAGE.ROUND_LIMIT:
                     READY = False
                     SUCCESS = True
@@ -384,6 +404,7 @@ def GAME1(CURRENT, PREV):
                         global menu
                         menu = REGAME("SUCCESS", frame)
                         if menu:
+                            pygame.mixer.music.fadeout(1000)
                             MENU_LIST[0] = True
                             MENU_LIST[1] = False
                             MENU_LIST[2] = False
@@ -403,6 +424,7 @@ def GAME1(CURRENT, PREV):
                 screen.blit(SUCCESS_IMAGE, ((display_width-SUCCESS_IMAGE_SHAPE[0])//2-200,(display_height-SUCCESS_IMAGE_SHAPE[1])//2+100))
 
         elif FAIL:
+            pygame.mixer.music.set_volume(1)
             screen.blit(frame, (0,0))
             STAGE.version = {1: np.random.choice(STAGE.ROUND_1),
                              2: np.random.choice(STAGE.ROUND_2)}.get(STAGE.ROUND)
@@ -443,6 +465,7 @@ def main():
 
         while True:
             if INTRO_MUSIC:
+                pygame.mixer.music.load("./sound/bgm4.mp3")
                 pygame.mixer.music.play(-1, 0.0)
                 INTRO_MUSIC = False
 
