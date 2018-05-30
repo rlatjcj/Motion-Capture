@@ -1,4 +1,3 @@
-
 PERCENTILE_THRESHOLD = 0.01
 
 # for calculating percentile
