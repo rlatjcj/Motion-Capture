@@ -41,7 +41,7 @@ def dist(x,y):
 def SegImg(img, READY, STAGE, SUCCESS=False, FAIL=False):
     # Run detection
     r = model.detect([img], verbose=0)[0]
-    
+
     if READY:
         person_index = np.where(r["class_ids"] == 1)[0]
 
@@ -87,5 +87,10 @@ def SegImg(img, READY, STAGE, SUCCESS=False, FAIL=False):
 
         # for calculating whether pixels are changed
         SUCCESS, FAIL = calculate.change(res_num)
+
+        # for printing segmentation images
+        result = cv2.cvtColor(result, cv2.COLOR_GRAY2RGB)
+        cv2.imwrite("person_masks.png", person_masks)
+        cv2.imwrite("result.png", result)
 
         return SUCCESS, FAIL
