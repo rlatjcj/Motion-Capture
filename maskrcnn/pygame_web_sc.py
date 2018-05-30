@@ -44,14 +44,11 @@ time_four.set_volume(1.5)
 time_five = pygame.mixer.Sound("./sound/5.wav")
 time_five.set_volume(1.5)
 
-#sound_list = ["time_five", "time_four", "time_three", "time_two", "time_one"]
 sound_dict = {5: time_five, 4: time_four, 3: time_three, 2: time_two, 1: time_one}
-#pygame.mixer.music.play(-1, 0.0)
-#pygame.mixer.music.set_volume(0.7)
 
 # for fullscreen
-screen = pygame.display.set_mode([display_width, display_height], pygame.FULLSCREEN | pygame.NOFRAME | pygame.HWSURFACE, 32)
-#screen = pygame.display.set_mode([display_width, display_height])
+#screen = pygame.display.set_mode([display_width, display_height], pygame.FULLSCREEN | pygame.NOFRAME | pygame.HWSURFACE, 32)
+screen = pygame.display.set_mode([display_width, display_height])
 
 
 # INTRO
@@ -244,6 +241,13 @@ def REGAME(FLAG, frame):
             if not pause:
                 return False
 
+        for event in pygame.event.get() :
+            if event.type == pygame.KEYDOWN :
+                if event.key == pygame.K_p:
+                    click_sound.play()
+                    pygame.mixer.music.unpause()
+                    pause = not pause
+
         pygame.display.update()
 
 def UNPAUSE() :
@@ -358,6 +362,7 @@ def GAME1(CURRENT, PREV):
                 screen.blit(STAGE_DICT[STAGE.ROUND], ((display_width-STAGE_SHAPE[0])//2,(display_height-STAGE_SHAPE[1])//2))
 
         if SUCCESS:
+            screen.blit(frame, (0,0))
             if (time.time()-print_time) >= 5:
                 STAGE.ROUND += 1
                 if STAGE.ROUND > STAGE.ROUND_LIMIT:
@@ -371,6 +376,7 @@ def GAME1(CURRENT, PREV):
                     screen.blit(SUCCESS_IMAGE, ((display_width-SUCCESS_IMAGE_SHAPE[0])//2-200,(display_height-SUCCESS_IMAGE_SHAPE[1])//2+100))
                     if (time.time()-print_time) >= 10:
                         screen.blit(frame, (0,0))
+                        global menu
                         menu = REGAME("SUCCESS", frame)
                         if menu:
                             MENU_LIST[0] = True
@@ -416,18 +422,23 @@ def main():
     try:
         CURRENT = 0
         PREV = 0
-        #intro_movie()
-        pygame.mixer.music.play(-1, 0.0)
+        INTRO_MUSIC = True
+        global menu
+        menu = False
+
         while True:
+            if INTRO_MUSIC:
+                pygame.mixer.music.play(-1, 0.0)
+                INTRO_MUSIC = False
+
             screen.fill(white)
             num_where = np.argmax(MENU_LIST)
             MENU[num_where](CURRENT, PREV)
+            if (num_where == 2 or num_where == 3) and menu:
+                INTRO_MUSIC =True
 
             for event in pygame.event.get() :
                 if event.type == pygame.KEYDOWN :
-                    if event.key == pygame.K_q:
-                        click_sound.play()
-                        QUIT()
                     if event.key == pygame.K_p:
                         click_sound.play()
                         PAUSE()
