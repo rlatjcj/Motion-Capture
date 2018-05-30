@@ -11,12 +11,6 @@ white = (255,255,255)
 cyan = (0,200,200)
 
 # =============================================================================
-# camera load
-# =============================================================================
-VIDEO = 0
-camera = cv2.VideoCapture(VIDEO)
-
-# =============================================================================
 # pygame, display, music initialize
 # =============================================================================
 
@@ -215,9 +209,6 @@ def PAUSE() :
 
         for event in pygame.event.get() :
             if event.type == pygame.KEYDOWN :
-                if event.key == pygame.K_q:
-                    click_sound.play()
-                    QUIT()
                 if event.key == pygame.K_p:
                     click_sound.play()
                     pygame.mixer.music.unpause()
@@ -304,6 +295,7 @@ def GAME1(CURRENT, PREV):
     from segmentation import SegImg
     from stage import DETERMINE_STAGE
 
+    camera = cv2.VideoCapture(0)
     ret, img = camera.read()
     STAGE = DETERMINE_STAGE(display_height, display_width)
     SegImg(img, READY, STAGE)
@@ -328,6 +320,15 @@ def GAME1(CURRENT, PREV):
                 pygame.display.flip()
                 pygame.mixer.music.fadeout(1000)
                 pygame.mixer.music.load("./sound/game_bgm2.mp3")
+                pygame.mixer.music.play(-1, 0.0)
+                MUSIC_FLAG = False
+            elif STAGE.ROUND == 3:
+                screen.fill(white)
+                screen.blit(LOADING, ((display_width-LOADING_SHAPE[0])*2//3,(display_height-LOADING_SHAPE[1])//3))
+                screen.blit(LOADING_IMAGE, ((display_width-LOADING_IMAGE_SHAPE[0])//3,(display_height-LOADING_IMAGE_SHAPE[1])*2//3))
+                pygame.display.flip()
+                pygame.mixer.music.fadeout(1000)
+                pygame.mixer.music.load("./sound/bgm2.mp3")
                 pygame.mixer.music.play(-1, 0.0)
                 MUSIC_FLAG = False
 
@@ -415,7 +416,8 @@ def GAME1(CURRENT, PREV):
 
                 else:
                     STAGE.version = {1: np.random.choice(STAGE.ROUND_1),
-                                     2: np.random.choice(STAGE.ROUND_2)}.get(STAGE.ROUND)
+                                     2: np.random.choice(STAGE.ROUND_2),
+                                     3: np.random.choice(STAGE.ROUND_3)}.get(STAGE.ROUND)
                     SUCCESS = False
                     PRINT_SUCCESS = False
 
@@ -427,7 +429,8 @@ def GAME1(CURRENT, PREV):
             pygame.mixer.music.set_volume(1)
             screen.blit(frame, (0,0))
             STAGE.version = {1: np.random.choice(STAGE.ROUND_1),
-                             2: np.random.choice(STAGE.ROUND_2)}.get(STAGE.ROUND)
+                             2: np.random.choice(STAGE.ROUND_2),
+                             3: np.random.choice(STAGE.ROUND_3)}.get(STAGE.ROUND)
             screen.blit(FAIL_PRINT, ((display_width-FAIL_PRINT_SHAPE[0])*3//4,(display_height-FAIL_PRINT_SHAPE[1])*2//7))
             screen.blit(FAIL_IMAGE, ((display_width-FAIL_IMAGE_SHAPE[0])//2-200,(display_height-FAIL_IMAGE_SHAPE[1])//2+100))
             if (time.time()-print_time) >= 5:
