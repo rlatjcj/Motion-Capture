@@ -41,8 +41,8 @@ time_five.set_volume(1)
 sound_dict = {5: time_five, 4: time_four, 3: time_three, 2: time_two, 1: time_one}
 
 # for fullscreen
-screen = pygame.display.set_mode([display_width, display_height], pygame.FULLSCREEN | pygame.NOFRAME | pygame.HWSURFACE, 32)
-#screen = pygame.display.set_mode([display_width, display_height])
+#screen = pygame.display.set_mode([display_width, display_height], pygame.FULLSCREEN | pygame.NOFRAME | pygame.HWSURFACE, 32)
+screen = pygame.display.set_mode([display_width, display_height])
 
 
 # INTRO
@@ -329,7 +329,7 @@ def GAME1(CURRENT, PREV):
                 pygame.display.flip()
                 pygame.mixer.music.fadeout(1000)
                 pygame.mixer.music.load("./sound/bgm2.mp3")
-                pygame.mixer.music.play(-1, 0.0)
+                pygame.mixer.music.play(-1, 3.5)
                 MUSIC_FLAG = False
 
         frame = video_setting(img)
@@ -349,6 +349,7 @@ def GAME1(CURRENT, PREV):
 
         if not READY:
             if NO_PERSON:
+                pygame.mixer.music.set_volume(1)
                 screen.blit(NOPERSON_PRINT, ((display_width-NOPERSON_PRINT_SHAPE[0])//2,(display_height-NOPERSON_PRINT_SHAPE[1])//2))
                 if (time.time()-print_time) >= 5:
                     NO_PERSON = False
