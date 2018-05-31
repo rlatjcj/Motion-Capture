@@ -19,6 +19,8 @@ pygame.init()
 pygame.display.set_caption("OpenCV camera stream on Pygame")
 clock = pygame.time.Clock()
 
+camera = cv2.VideoCapture(0)
+
 # Display for fullscreen
 display_width = pygame.display.Info().current_w
 display_height = pygame.display.Info().current_h
@@ -41,8 +43,8 @@ time_five.set_volume(1)
 sound_dict = {5: time_five, 4: time_four, 3: time_three, 2: time_two, 1: time_one}
 
 # for fullscreen
-#screen = pygame.display.set_mode([display_width, display_height], pygame.FULLSCREEN | pygame.NOFRAME | pygame.HWSURFACE, 32)
-screen = pygame.display.set_mode([display_width, display_height])
+screen = pygame.display.set_mode([display_width, display_height], pygame.FULLSCREEN | pygame.NOFRAME | pygame.HWSURFACE, 32)
+#screen = pygame.display.set_mode([display_width, display_height])
 
 
 # INTRO
@@ -295,7 +297,6 @@ def GAME1(CURRENT, PREV):
     from segmentation import SegImg
     from stage import DETERMINE_STAGE
 
-    camera = cv2.VideoCapture(0)
     ret, img = camera.read()
     STAGE = DETERMINE_STAGE(display_height, display_width)
     SegImg(img, READY, STAGE)
