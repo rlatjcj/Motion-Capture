@@ -328,8 +328,8 @@ def GAME1(CURRENT, PREV):
                 screen.blit(LOADING_IMAGE, ((display_width-LOADING_IMAGE_SHAPE[0])//3,(display_height-LOADING_IMAGE_SHAPE[1])*2//3))
                 pygame.display.flip()
                 pygame.mixer.music.fadeout(1000)
-                pygame.mixer.music.load("./sound/bgm2.mp3")
-                pygame.mixer.music.play(-1, 3.5)
+                pygame.mixer.music.load("./sound/game_bgm3.mp3")
+                pygame.mixer.music.play(-1, 0.0)
                 MUSIC_FLAG = False
 
         frame = video_setting(img)
