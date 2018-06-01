@@ -90,11 +90,5 @@ def SegImg(img, READY, STAGE, SUCCESS=False, FAIL=False):
 
         # for printing segmentation images
         result = cv2.cvtColor(result, cv2.COLOR_GRAY2RGB)
-        if SUCCESS:
-            cv2.imwrite("person_masks_success.png", person_masks)
-            cv2.imwrite("result_success.png", result)
-        elif FAIL:
-            cv2.imwrite("person_masks_fail.png", person_masks)
-            cv2.imwrite("result_fail.png", result)
 
         return SUCCESS, FAIL
