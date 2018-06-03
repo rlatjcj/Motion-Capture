@@ -10,7 +10,7 @@ from settings import *
 
 clock = pygame.time.Clock()
 
-MENU = {0: INTRO, 1: CHOOSE_GAME, 2: GAME1, 3: GAME2}
+MENU = {0: INTRO, 1: CHOOSE_GAME, 2: GAME1, 3: GAME2, 4: SETTING}
 
 def main():
     try:

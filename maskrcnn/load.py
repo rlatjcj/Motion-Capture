@@ -30,9 +30,25 @@ sound_dict = {5: time_five, 4: time_four, 3: time_three, 2: time_two, 1: time_on
 START_norm = pygame.image.load("./image/b_START.png")
 START_high = pygame.image.load("./image/bb_START.png")
 SETTING_norm = pygame.image.load("./image/b_SETTING.png")
-SETTING_high = pygame.image.load("./image/b_SETTING.png")
+SETTING_high = pygame.image.load("./image/bb_SETTING.png")
 QUIT_norm = pygame.image.load("./image/b_EXIT.png")
 QUIT_high = pygame.image.load("./image/bb_EXIT.png")
+
+# SETTING
+PERSON_PRINT = pygame.image.load("./image/p_PERSON.png")
+PERSON_PRINT_SHAPE = pygame.surfarray.array2d(PERSON_PRINT).shape
+UP_norm = pygame.image.load("./image/b_UP.png")
+UP_high = pygame.image.load("./image/bb_UP.png")
+DOWN_norm = pygame.image.load("./image/b_DOWN.png")
+DOWN_high = pygame.image.load("./image/bb_DOWN.png")
+UPDOWN_SHAPE = pygame.surfarray.array2d(UP_norm).shape
+TEAMBATTLE_PRINT = pygame.image.load("./image/p_TEAMBATTLE.png")
+TEAMBATTLE_PRINT_SHAPE = pygame.surfarray.array2d(TEAMBATTLE_PRINT).shape
+ON = pygame.image.load("./image/b_ON.png")
+OFF = pygame.image.load("./image/b_OFF.png")
+ONOFF_SHAPE = pygame.surfarray.array2d(ON).shape
+GOBACK_norm = pygame.image.load("./image/b_BACK.png")
+GOBACK_high = pygame.image.load("./image/bb_BACK.png")
 
 # CHOOSE_GAME
 GAME1_norm = pygame.image.load("./image/b_GAME1.png")

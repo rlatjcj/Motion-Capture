@@ -14,7 +14,7 @@ class DETERMINE_STAGE():
         self.width = width
         self.version = 0
 
-        self.ROUND_LIMIT = 1
+        self.ROUND_LIMIT = 3
         # the number of STAGEs for each round
         self.ROUND_1 = 1
         self.ROUND_2 = 2
