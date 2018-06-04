@@ -9,7 +9,6 @@ import calculate
 
 MODEL = "../../mask_rcnn_coco.h5"
 LOGS = "./log/"  # to save training logs
-LIMIT = 2
 
 class InferenceConfig(Config):
     # Set batch size to 1 since we'll be running inference on
@@ -38,7 +37,7 @@ model.load_weights(MODEL, by_name=True)
 def dist(x,y):
     return np.sqrt(np.sum((x-y)**2))
 
-def SegImg(img, READY, STAGE, SUCCESS=False, FAIL=False):
+def SegImg(img, READY, STAGE, LIMIT=None, SUCCESS=False, FAIL=False):
     # Run detection
     r = model.detect([img], verbose=0)[0]
 
@@ -90,7 +89,5 @@ def SegImg(img, READY, STAGE, SUCCESS=False, FAIL=False):
 
         # for printing segmentation images
         result = cv2.cvtColor(result, cv2.COLOR_GRAY2RGB)
-        cv2.imwrite("person_masks.png", person_masks)
-        cv2.imwrite("result.png", result)
 
         return SUCCESS, FAIL

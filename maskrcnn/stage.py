@@ -1,4 +1,3 @@
-
 import cv2
 import numpy as np
 import pygame
@@ -42,7 +41,7 @@ class DETERMINE_STAGE():
                         ((seg_width-rect_width)//2, seg_height-rect_height),
                         ((seg_width+rect_width)//2, seg_height), BOUNDING_COLOR, -1)
 
-            center = np.array([self.width//2, (2*self.height-rect_height)//2])
+            center = np.array([(seg_width-rect_width)//2+rect_width//2, seg_height-rect_height+rect_height//2])
 
             return bounding, rect_width*rect_height, center
 
@@ -69,7 +68,7 @@ class DETERMINE_STAGE():
                         ((seg_width-rect_width)//2, seg_height-rect_height),
                         ((seg_width+rect_width)//2, seg_height), BOUNDING_COLOR, -1)
 
-            center = np.array([self.width//2, (2*self.height-rect_height)//2])
+            center = np.array([(seg_width-rect_width)//2+rect_width//2, seg_height-rect_height+rect_height//2])
 
             return bounding, rect_width*rect_height, center
 
@@ -95,7 +94,7 @@ class DETERMINE_STAGE():
                         ((seg_width-rect_width)//2, seg_height-rect_height),
                         ((seg_width+rect_width)//2, seg_height), BOUNDING_COLOR, -1)
 
-            center = np.array([self.width//2, (2*self.height-rect_height)//2])
+            center = np.array([(seg_width-rect_width)//2+rect_width//2, seg_height-rect_height+rect_height//2])
 
             return bounding, rect_width*rect_height, center
 
@@ -121,7 +120,7 @@ class DETERMINE_STAGE():
                         ((seg_width-rect_width)//2, seg_height-rect_height*4//3),
                         ((seg_width+rect_width)//2, seg_height-rect_height//3), BOUNDING_COLOR, -1)
 
-            center = np.array([self.width//2, (2*self.height-rect_height)//2])
+            center = np.array([(seg_width-rect_width)//2+rect_width//2, seg_height-rect_height*4//3+rect_height//2])
 
             return bounding, rect_width*rect_height, center
 
