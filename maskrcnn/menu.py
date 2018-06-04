@@ -36,7 +36,7 @@ def SETTING(CURRENT, PREV):
     pygame.display.flip()
 
 
-def PAUSE() :
+def PAUSE(CURRENT, PREV) :
     pygame.mixer.music.pause() # music pause
     click_sound.play()
     global pause
@@ -44,9 +44,17 @@ def PAUSE() :
     screen.fill(white)
 
     while pause :
-        screen.blit(PAUSE_PRINT, ((display_width-PAUSE_PRINT_SHAPE[0])//2, PAUSE_PRINT_SHAPE[1]//2))
-        button_pose_quit(CONTINUE_norm, CONTINUE_high, (display_width-BUTTON_SHAPE[0])//2, (display_height-BUTTON_SHAPE[1])*3//7, BUTTON_SHAPE[0], BUTTON_SHAPE[1], UNPAUSE)
-        button_pose_quit(QUIT_norm, QUIT_high, (display_width-BUTTON_SHAPE[0])//2, (display_height-BUTTON_SHAPE[1])*5//7, BUTTON_SHAPE[0], BUTTON_SHAPE[1], QUIT)
+        screen.blit(PAUSE_PRINT, ((display_width-PAUSE_PRINT_SHAPE[0])//2, PAUSE_PRINT_SHAPE[1]//4))
+        button_pose_quit(FIRSTTIME_norm, FIRSTTIME_high, (display_width-BUTTON_SHAPE[0])//2, (display_height-BUTTON_SHAPE[1])*4//7, BUTTON_SHAPE[0], BUTTON_SHAPE[1], UNPAUSE)
+        if not pause:
+            if CURRENT == 0 or CURRENT == 1 or CURRENT == 4:
+                MENU_LIST[CURRENT] = False
+                MENU_LIST[0] = True
+                break
+            elif CURRENT == 2 or CURRENT == 3:
+                return True
+        button_pose_quit(CONTINUE_norm, CONTINUE_high, (display_width-BUTTON_SHAPE[0])//2, (display_height-BUTTON_SHAPE[1])*2//7, BUTTON_SHAPE[0], BUTTON_SHAPE[1], UNPAUSE)
+        button_pose_quit(QUIT_norm, QUIT_high, (display_width-BUTTON_SHAPE[0])//2, (display_height-BUTTON_SHAPE[1])*6//7, BUTTON_SHAPE[0], BUTTON_SHAPE[1], QUIT)
 
         for event in pygame.event.get() :
             if event.type == pygame.KEYDOWN :
@@ -66,9 +74,11 @@ def REGAME(FLAG, frame):
 
         if FLAG == "FAIL":
             screen.blit(CHALLENGE_PRINT, ((display_width-CHALLENGE_PRINT_SHAPE[0])*3//4, (display_height-CHALLENGE_PRINT_SHAPE[1])*2//7))
-            screen.blit(CHALLENGE_IMAGE, ((display_width-CHALLENGE_IMAGE_SHAPE[0])//4, (display_height-CHALLENGE_IMAGE_SHAPE[1])*4//7))
+            screen.blit(CHALLENGE_IMAGE, ((display_width-CHALLENGE_IMAGE_SHAPE[0])*2//7, (display_height-CHALLENGE_IMAGE_SHAPE[1])*4//7))
+            button_pose_quit(FIRSTTIME_norm, FIRSTTIME_high, (display_width-BUTTON_SHAPE[0])*3//4, (display_height-BUTTON_SHAPE[1])*6//7, BUTTON_SHAPE[0], BUTTON_SHAPE[1], UNPAUSE)
+            if not pause:
+                return True
             button_pose_quit(YES_norm, YES_high, (display_width-BUTTON_SHAPE[0])//4, (display_height-BUTTON_SHAPE[1])*6//7, BUTTON_SHAPE[0], BUTTON_SHAPE[1], UNPAUSE)
-            button_pose_quit(NO_norm, NO_high, (display_width-BUTTON_SHAPE[0])*3//4, (display_height-BUTTON_SHAPE[1])*6//7, BUTTON_SHAPE[0], BUTTON_SHAPE[1], QUIT)
         else:
             screen.blit(RESTART_IMAGE, ((display_width-RESTART_IMAGE_SHAPE[0])//2,(display_height-RESTART_IMAGE_SHAPE[1])//2))
             button_pose_quit(FIRSTTIME_norm, FIRSTTIME_high, (display_width-RESTART_IMAGE_SHAPE[0])//2+50, (display_height-RESTART_IMAGE_SHAPE[1])//2+500, BUTTON_SHAPE[0], BUTTON_SHAPE[1], UNPAUSE)
@@ -108,7 +118,7 @@ def CHOOSE_GAME(CURRENT, PREV):
 
 def GAME1(CURRENT, PREV):
     pygame.mixer.music.fadeout(2000)
-    global screen, LIMIT, teambattle
+    global screen, LIMIT, teambattle, go_menu
     PREV = CURRENT
     CURRENT = 2
 
@@ -125,6 +135,7 @@ def GAME1(CURRENT, PREV):
     PRINT_SUCCESS = False
     NO_PERSON = False
     MUSIC_FLAG = True
+    go_menu = False
 
     # for initializing
     from segmentation import SegImg
@@ -173,7 +184,16 @@ def GAME1(CURRENT, PREV):
             if event.type == pygame.KEYDOWN :
                 if event.key == pygame.K_p :
                     click_sound.play()
-                    PAUSE()
+                    go_menu = PAUSE(CURRENT, PREV)
+
+        # for pause
+        if go_menu:
+            pygame.mixer.music.fadeout(1000)
+            MENU_LIST[0] = True
+            MENU_LIST[1] = False
+            MENU_LIST[2] = False
+            MENU_LIST[3] = False
+            break
 
         if not READY:
             if NO_PERSON:
@@ -183,8 +203,8 @@ def GAME1(CURRENT, PREV):
             elif not SUCCESS and not FAIL:
                 if teambattle and STAGE.ROUND == 1:
                     MakeText("{0}, {1} TEAM!".format(TEAM_ORDER[TEAM_CNT], TEAM_LIST[TEAM_CNT]), 200)
-                screen.blit(READY_IMAGE, ((display_width-READY_IMAGE_SHAPE[0])//3,(display_height-READY_IMAGE_SHAPE[1])*2//3))
-                screen.blit(READY_PRINT, ((display_width-READY_PRINT_SHAPE[0])*2//3,(display_height-READY_PRINT_SHAPE[1])//3))
+                screen.blit(READY_IMAGE, ((display_width-READY_IMAGE_SHAPE[0])//3,(display_height-READY_IMAGE_SHAPE[1])*3//4))
+                screen.blit(READY_PRINT, ((display_width-READY_PRINT_SHAPE[0])*3//4,(display_height-READY_PRINT_SHAPE[1])//6))
                 for event in pygame.event.get() :
                     if event.type == pygame.KEYDOWN :
                         if event.key == pygame.K_SPACE:
@@ -197,7 +217,11 @@ def GAME1(CURRENT, PREV):
                 timer = math.ceil(TIME_INIT-(time.time()-start-TIME_STAGE))
 
                 if float(timer) <= 0.01:
-                    SUCCESS, FAIL = SegImg(img, READY, STAGE, LIMIT)
+                    SUCCESS, FAIL, result = SegImg(img, READY, STAGE, LIMIT)
+                    # for check segmentation
+                    seg_shape = result.shape
+                    result = seg_setting(result)
+
                     if not SUCCESS and not FAIL:
                         NO_PERSON = True
                     READY = False
@@ -237,7 +261,6 @@ def GAME1(CURRENT, PREV):
                         screen.blit(SUCCESS_IMAGE, ((display_width-SUCCESS_IMAGE_SHAPE[0])//2-200,(display_height-SUCCESS_IMAGE_SHAPE[1])//2+100))
                         if (time.time()-print_time) >= 10:
                             screen.blit(frame, (0,0))
-                            global go_menu
                             go_menu = REGAME("SUCCESS", frame)
                             if go_menu:
                                 pygame.mixer.music.fadeout(1000)
@@ -270,6 +293,8 @@ def GAME1(CURRENT, PREV):
                     PRINT_SUCCESS = False
 
             else:
+                # for check segmentation
+                screen.blit(result, (display_width-seg_shape[1],display_height-seg_shape[0]))
                 screen.blit(SUCCESS_PRINT, ((display_width-SUCCESS_PRINT_SHAPE[0])//2+300,SUCCESS_PRINT_SHAPE[1]//2))
                 screen.blit(SUCCESS_IMAGE, ((display_width-SUCCESS_IMAGE_SHAPE[0])//2-200,(display_height-SUCCESS_IMAGE_SHAPE[1])//2+100))
 
@@ -277,14 +302,25 @@ def GAME1(CURRENT, PREV):
             pygame.mixer.music.set_volume(1)
             screen.blit(frame, (0,0))
             if not teambattle:
+                # for check segmentation
+                screen.blit(result, (display_width-seg_shape[1],display_height-seg_shape[0]))
                 screen.blit(FAIL_PRINT, ((display_width-FAIL_PRINT_SHAPE[0])*3//4,(display_height-FAIL_PRINT_SHAPE[1])*2//7))
                 screen.blit(FAIL_IMAGE, ((display_width-FAIL_IMAGE_SHAPE[0])//2-200,(display_height-FAIL_IMAGE_SHAPE[1])//2+100))
                 if (time.time()-print_time) >= 5:
                     FAIL = False
                     PRINT_SUCCESS = False
                     screen.blit(frame, (0,0))
-                    REGAME("FAIL", frame)
-                    STAGE.version = {1: np.random.choice(STAGE.ROUND_1)}.get(STAGE.ROUND)
+                    go_menu = REGAME("FAIL", frame)
+                    if go_menu:
+                        pygame.mixer.music.fadeout(1000)
+                        MENU_LIST[0] = True
+                        MENU_LIST[1] = False
+                        MENU_LIST[2] = False
+                        MENU_LIST[3] = False
+                        break
+                    STAGE.version = {1: np.random.choice(STAGE.ROUND_1),
+                                     2: np.random.choice(STAGE.ROUND_2),
+                                     3: np.random.choice(STAGE.ROUND_3)}.get(STAGE.ROUND)
 
             else:
                 if (time.time()-print_time) >= 5:
@@ -308,7 +344,6 @@ def GAME1(CURRENT, PREV):
 
                         if (time.time()-print_time) >= 10:
                             screen.blit(frame, (0,0))
-                            global go_menu
                             go_menu = REGAME("SUCCESS", frame)
                             if go_menu:
                                 pygame.mixer.music.fadeout(1000)
@@ -321,6 +356,9 @@ def GAME1(CURRENT, PREV):
                                 break
 
                 else:
+                    # for check segmentation
+                    screen.blit(result, (display_width-seg_shape[1],display_height-seg_shape[0]))
+
                     MakeText("{} TEAM FAIL!".format(TEAM_LIST[TEAM_CNT]), 200)
 
 

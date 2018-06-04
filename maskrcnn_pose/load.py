@@ -1,4 +1,5 @@
 import pygame
+import cv2
 from settings import *
 
 ################################################################################
@@ -64,9 +65,12 @@ PAUSE_PRINT_SHAPE = pygame.surfarray.array2d(PAUSE_PRINT).shape
 CONTINUE_norm = pygame.image.load("./image/b_CONTINUE.png")
 CONTINUE_high = pygame.image.load("./image/bb_CONTINUE.png")
 
+
 CHALLENGE_PRINT = pygame.image.load("./image/p_CHALLENGE.png")
 CHALLENGE_PRINT_SHAPE = pygame.surfarray.array2d(CHALLENGE_PRINT).shape
 CHALLENGE_IMAGE = pygame.image.load("./image/img_CHALLENGE.png")
+CHALLENGE_IMAGE_SHAPE = pygame.surfarray.array2d(CHALLENGE_IMAGE).shape
+CHALLENGE_IMAGE = pygame.transform.scale(CHALLENGE_IMAGE, (CHALLENGE_IMAGE_SHAPE[0]//3, CHALLENGE_IMAGE_SHAPE[1]//3))
 CHALLENGE_IMAGE_SHAPE = pygame.surfarray.array2d(CHALLENGE_IMAGE).shape
 
 YES_norm = pygame.image.load("./image/b_YES.png")
@@ -90,15 +94,19 @@ BUTTON_SHAPE = pygame.surfarray.array2d(START_norm).shape
 
 # load images for GAME1
 FIT_POSE = pygame.image.load("./image/img_POSITION.png")
-FIT_POSE = pygame.transform.scale(FIT_POSE, (display_width//2, display_height*4//5))
+FIT_POSE = pygame.transform.scale(FIT_POSE, (display_width//3, display_height*4//5))
 FIT_SHAPE = pygame.surfarray.array2d(FIT_POSE).shape
 READY_PRINT = pygame.image.load("./image/p_READY.png")
 READY_PRINT_SHAPE = pygame.surfarray.array2d(READY_PRINT).shape
 READY_IMAGE = pygame.image.load("./image/img_READY.png")
 READY_IMAGE_SHAPE = pygame.surfarray.array2d(READY_IMAGE).shape
+READY_IMAGE = pygame.transform.scale(READY_IMAGE, (READY_IMAGE_SHAPE[0]//3, READY_IMAGE_SHAPE[1]//3))
+READY_IMAGE_SHAPE = pygame.surfarray.array2d(READY_IMAGE).shape
 LOADING = pygame.image.load("./image/p_LOADING.png")
 LOADING_SHAPE = pygame.surfarray.array2d(LOADING).shape
 LOADING_IMAGE = pygame.image.load("./image/img_LOADING.png")
+LOADING_IMAGE_SHAPE = pygame.surfarray.array2d(LOADING_IMAGE).shape
+LOADING_IMAGE = pygame.transform.scale(LOADING_IMAGE, (LOADING_IMAGE_SHAPE[0]//3, LOADING_IMAGE_SHAPE[1]//3))
 LOADING_IMAGE_SHAPE = pygame.surfarray.array2d(LOADING_IMAGE).shape
 FIT_PRINT = pygame.image.load("./image/p_POSITION.png")
 FIT_PRINT_SHAPE = pygame.surfarray.array2d(FIT_PRINT).shape
@@ -111,14 +119,34 @@ FAIL_PRINT = pygame.image.load("./image/p_FAIL.png")
 FAIL_PRINT_SHAPE = pygame.surfarray.array2d(FAIL_PRINT).shape
 SUCCESS_IMAGE = pygame.image.load("./image/img_SUCCESS.png")
 SUCCESS_IMAGE_SHAPE = pygame.surfarray.array2d(SUCCESS_IMAGE).shape
+SUCCESS_IMAGE = pygame.transform.scale(SUCCESS_IMAGE, (SUCCESS_IMAGE_SHAPE[0]//2, SUCCESS_IMAGE_SHAPE[1]//2))
+SUCCESS_IMAGE_SHAPE = pygame.surfarray.array2d(SUCCESS_IMAGE).shape
 FAIL_IMAGE = pygame.image.load("./image/img_FAIL.png")
 FAIL_IMAGE_SHAPE = pygame.surfarray.array2d(FAIL_IMAGE).shape
 ROUND_CLEAR_PRINT = pygame.image.load("./image/p_CLEAR.png")
 ROUND_CLEAR_PRINT_SHAPE = pygame.surfarray.array2d(ROUND_CLEAR_PRINT).shape
 
-# load images about stages
+# load images about stages of GAME1
 STAGE_1 = pygame.image.load("./image/img_GAME1_ROUND1.png")
 STAGE_2 = pygame.image.load("./image/img_GAME1_ROUND2.png")
 STAGE_3 = pygame.image.load("./image/img_GAME1_ROUND3.png")
 STAGE_DICT = {1: STAGE_1, 2: STAGE_2, 3: STAGE_3}
 STAGE_SHAPE = pygame.surfarray.array2d(STAGE_1).shape
+
+# for print image
+GAME1_circle = pygame.image.load("./image/img_circle.png")
+#GAME1_heart = pygame.image.load("./image/img_heart.png")
+GAME1_infi = pygame.image.load("./image/img_infi.png")
+GAME1_mush = pygame.image.load("./image/img_mush.png")
+GAME1_star = pygame.image.load("./image/img_star.png")
+GAME1_tri = pygame.image.load("./image/img_tri.png")
+JUMP_PRINT = pygame.image.load("./image/p_JUMP.png")
+JUMP_PRINT_SHAPE = pygame.surfarray.array2d(JUMP_PRINT).shape
+
+# for calculate bounding box
+GAME1_tri_cv = cv2.imread("./image/img_tri_cv.png", cv2.IMREAD_GRAYSCALE)
+GAME1_mush_cv = cv2.imread("./image/img_mush_cv.png", cv2.IMREAD_GRAYSCALE)
+GAME1_circle_cv = cv2.imread("./image/img_circle_cv.png", cv2.IMREAD_GRAYSCALE)
+GAME1_infi_cv = cv2.imread("./image/img_infi_cv.png", cv2.IMREAD_GRAYSCALE)
+GAME1_star_cv = cv2.imread("./image/img_star_cv.png", cv2.IMREAD_GRAYSCALE)
+#GAME1_heart_cv = cv2.imread("./image/img_heart_cv.png", cv2.IMREAD_GRAYSCALE)

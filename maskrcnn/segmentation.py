@@ -50,7 +50,7 @@ def SegImg(img, READY, STAGE, LIMIT=None, SUCCESS=False, FAIL=False):
 
 
         # STAGE
-        bounding, area, center = STAGE.determine_stage(r["masks"][:,:,0])
+        bounding, center = STAGE.determine_stage(r["masks"][:,:,0])
 
         rois = np.array(r["rois"][person_index])
 
@@ -87,7 +87,4 @@ def SegImg(img, READY, STAGE, LIMIT=None, SUCCESS=False, FAIL=False):
         # for calculating whether pixels are changed
         SUCCESS, FAIL = calculate.change(res_num)
 
-        # for printing segmentation images
-        result = cv2.cvtColor(result, cv2.COLOR_GRAY2RGB)
-
-        return SUCCESS, FAIL
+        return SUCCESS, FAIL, result

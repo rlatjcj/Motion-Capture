@@ -1,43 +1,48 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sat Jun  2 17:39:09 2018
-
-@author: yeop
-"""
-
-import os
-os.getcwd()
-os.chdir("/workspace/motioncapture_yeo/maskrcnn_pose")
 import numpy as np
-import coco
+import os
+os.chdir("maskrcnn_pose/")
 import model as modellib
-#import visualize
-from model import log
+
 import cv2
-import time
-import pygame
 import utils
 import numpy as np
+from config import Config
 
-#os.chdir("/workspace/motioncapture_yeo/maskrcnn_pose")
 from stage import DETERMINE_STAGE
 import calculate
 import joint
 from joint import JointConfig
 
+MODEL_DIR = "./log/"
 
-ROOT_DIR = os.getcwd()
-ROOT_DIR
-# Directory to save logs and trained model
-MODEL_DIR = os.path.join(ROOT_DIR, "mylogs")
-# Local path to trained weights file
-#COCO_MODEL_PATH = os.path.join(ROOT_DIR, "mylogs/coco20180530T1104/mask_rcnn_coco_0012.h5")
-
-
-class InferenceConfig(coco.CocoConfig):
+class InferenceConfig(Config):
     GPU_COUNT = 1
     IMAGES_PER_GPU = 1
+
+    # Give the configuration a recognizable name
+    NAME = "coco"
+
+    NUM_CLASSES = 1 + 1  # Person and background
+
+    NUM_KEYPOINTS = 17
+    MASK_SHAPE = [28, 28]
+    KEYPOINT_MASK_SHAPE = [56,56]
+    # DETECTION_MAX_INSTANCES = 50
+    TRAIN_ROIS_PER_IMAGE = 100
+    MAX_GT_INSTANCES = 128
+    RPN_TRAIN_ANCHORS_PER_IMAGE = 150
+    USE_MINI_MASK = True
+    MASK_POOL_SIZE = 14
     KEYPOINT_MASK_POOL_SIZE = 7
+    LEARNING_RATE = 0.002
+    STEPS_PER_EPOCH = 1000
+    WEIGHT_LOSS = True
+    KEYPOINT_THRESHOLD = 0.005
+
+    PART_STR = ["nose","left_eye","right_eye","left_ear","right_ear","left_shoulder",
+                "right_shoulder","left_elbow","right_elbow","left_wrist","right_wrist",
+                "left_hip","right_hip","left_knee","right_knee","left_ankle","right_ankle"]
+    LIMBS = [0,-1,-1,5,-1,6,5,7,6,8,7,9,8,10,11,13,12,14,13,15,14,16]
 
 
 inference_config = InferenceConfig()
@@ -50,17 +55,9 @@ model = modellib.MaskRCNN(mode="inference",
 
 
 # Get path to saved weights
-model_path = "../../mask_rcnn_coco_humanpose.h5" # This will be in workspace
-model_path
-#model_path = os.path.join(ROOT_DIR, "mylogs/coco20180530T1104/mask_rcnn_coco_0012.h5")
-assert model_path != "", "Provide path to trained weights"
-print("Loading weights from ", model_path)
-model.load_weights(model_path, by_name=True)
-
-
-# variables
-#class_names = ['BG', 'person']
-LIMIT = 2
+MODEL = "../../mask_rcnn_coco_humanpose.h5" # This will be in workspace
+print("Loading weights from ", MODEL)
+model.load_weights(MODEL, by_name=True)
 
 
 def dist(x,y):
@@ -68,27 +65,26 @@ def dist(x,y):
 
 
 # function
-def SegImg(img, READY, STAGE, SUCCESS=False, FAIL=False, GAME1 = False, GAME2 = False):
-
+def SegImg(img, READY, STAGE, LIMIT=None, GAME=True, SUCCESS=False, FAIL=False):
+    cap = cv2.VideoCapture(0)
+    ret, img = cap.read()
+    import matplotlib.pyplot as plt
+    plt.imshow(img)
     # Run detection
-    img = cv2.imread("../../esens.jpeg")
-    cv2.imwrite("img.png", img)
     result = model.detect_keypoint([img], verbose=0)
 
     # GAME1 & GAME2  r값 공유
     r = result[0]
 
-    if READY & GAME1 :
+    if READY and GAME == True:
         person_index = np.where(r["class_ids"] == 1)
 
         # if there are no people in image
         if len(person_index[0]) == 0:
-            return SUCCESS, FAIL
+            return SUCCESS, FAIL, None
 
-        # GAME1 PART
-        STAGE = DETERMINE_STAGE(img.shape[0], img.shape[1])
         # STAGE
-        bounding, area, center = STAGE.determine_stage(r["masks"][:,:,0])
+        bounding, center = STAGE.determine_stage(r["masks"][:,:,0])
 
         rois = r["rois"]
 
@@ -100,6 +96,7 @@ def SegImg(img, READY, STAGE, SUCCESS=False, FAIL=False, GAME1 = False, GAME2 = 
             pos = np.array([x,y])
             result = dist(pos, center)
             distances.append(result)
+
         final_instance_index = np.array(distances).argsort()[:LIMIT]
 
         masks = r["masks"]
@@ -123,28 +120,17 @@ def SegImg(img, READY, STAGE, SUCCESS=False, FAIL=False, GAME1 = False, GAME2 = 
 
         # for calculating whether pixels are changed
         SUCCESS, FAIL = calculate.change(res_num)
-        print(SUCCESS, FAIL)
-        # for printing segmentation images
-        result = cv2.cvtColor(result, cv2.COLOR_GRAY2RGB)
-        cv2.imwrite("person_masks.png", person_masks)
-        cv2.imwrite("result.png", result)
 
-        return SUCCESS, FAIL
+        return SUCCESS, FAIL, result
 
-    if READY & GAME2 :
+    if READY and GAME == False:
         person_index = np.where(r["class_ids"] == 1)
 
         # if there are no people in image
-        if len(person_index[0]) < 2 :
-            print("more person")
+        if len(person_index[0]) < LIMIT :
             return SUCCESS, FAIL
 
-        # GAME2 PART
-
-        # tmp center : This center will be changed to boundary center
-        tmp_center = img.shape[0]//2, img.shape[1]//2
-        center = tmp_center
-
+        center = img.shape[0]//2, img.shape[1]//2
         rois = r["rois"]
 
         # calculate roi's center position
@@ -155,11 +141,15 @@ def SegImg(img, READY, STAGE, SUCCESS=False, FAIL=False, GAME1 = False, GAME2 = 
             pos = np.array([x,y])
             distance = dist(pos, center)
             distances.append(distance)
-        final_instance_index = np.array(distances).argsort()[:LIMIT]
+        if len(person_index[0]) < LIMIT:
+            final_instance_index = np.array(distances).argsort()[:len(person_index[0])]
+        else:
+            final_instance_index = np.array(distances).argsort()[:LIMIT]
 
         rois = r["rois"][final_instance_index]
         person_masks = r["masks"][:,:,final_instance_index]
-
+        plt.imshow(person_masks[:,:,0])
+        plt.imshow(person_masks[:,:,1])
         # keypoint part
         # keypoint has 0 ~ 16 parts = 17 parts
         keypoints = r['keypoints']
@@ -167,31 +157,33 @@ def SegImg(img, READY, STAGE, SUCCESS=False, FAIL=False, GAME1 = False, GAME2 = 
 
         # add neck keypoint to 17 index = 18 part
         person_keypoints = joint.add_neck_parts(img, person_keypoints, skeleton = parts_config.skeleton)
-        person_keypoints
+
         # draw skeleton image each person
 
-        person_keypoints_img = joint.display_person_keypoints(img, person_masks, person_keypoints, skeleton = parts_config.skeleton)
+        person_keypoints_img, person_keypoints_masks = joint.display_person_keypoints(img, person_masks, person_keypoints, skeleton = parts_config.skeleton)
+
+        plt.imshow(person_keypoints_img)
+        plt.imshow(person_keypoints_masks[:,:,1])
         # person_keypoints_img.shape = (708, 1114, 2)
 
+        parts_angles = []
         # save person segfile
-        cv2.imwrite("person_keypoints_img1.png", person_keypoints_img[:,:,0])
-        cv2.imwrite("person_keypoints_img2.png", person_keypoints_img[:,:,1])
-
+        for i in range(len(person_index[0])):
+            cv2.imwrite("person_keypoints_img{}.png".format(i), person_keypoints_img[:,:,i])
+            parts_angles.append(calculate.all_parts_list(parts_config.parts_list, person_keypoints[i]))
+            print(parts_angles[i])
         # algorithm
-        matches, resi = joint.featureMatching(person_keypoints_img, rois)
-
-        # caculate ineterest parts angles
-        first_person_parts_angles = calculate.all_parts_list(parts_config.parts_list, person_keypoints[0]) # first person's parts angle
-        second_person_parts_angles = calculate.all_parts_list(parts_config.parts_list, person_keypoints[1]) # second person's parts angle
-        print(first_person_parts_angles)
-        print(second_person_parts_angles)
+        #matches, resi = joint.featureMatching(person_keypoints_img, rois)
 
         number_of_parts = len(parts_config.parts_list)
         distances = []
         for idx in range(number_of_parts) :
-            result = dist(first_person_parts_angles[idx], second_person_parts_angles[idx])
+            #for i in range(LIMIT):
+            result = dist(parts_angles[0][idx], parts_angles[1][idx])
             distances.append(result)
 
         # for calculating whether compare keypoints
         SUCCESS, FAIL = calculate.compare_keypoints(distances)
         print(SUCCESS, FAIL)
+
+        return SUCCESS, FAIL, np.sum(person_keypoints_img, axis=2)

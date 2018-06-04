@@ -78,7 +78,7 @@ def random_colors(N, bright=True):
     return colors
 
 
-def display_person_keypoints(image, masks, keypoints, skeleton = None):
+def display_person_keypoints(images, masks, keypoints, skeleton = None):
     """
     image : frame
     masks : person's masks
@@ -119,8 +119,9 @@ def display_person_keypoints(image, masks, keypoints, skeleton = None):
                 # Joint:(x,y,v)
                 if ((Joint_start[2] != 0) & (Joint_end[2] != 0)):
                     # print(color)VIDEO
-                    cv2.line(mask, tuple(Joint_start[:2]), tuple(Joint_end[:2]), color, 3)
-    return(masks)
+                    cv2.line(masks, tuple(Joint_start[:2]), tuple(Joint_end[:2]), color, 3)
+                    cv2.line(images, tuple(Joint_start[:2]), tuple(Joint_end[:2]), color, 3)
+    return images, masks
 
 
 

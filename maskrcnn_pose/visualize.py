@@ -113,10 +113,16 @@ def video_setting(frame, flag=False):
 
     return frame
 
+def seg_setting(frame):
+    frame = np.rot90(frame)
+    frame = pygame.surfarray.make_surface(frame)
+
+    return frame
+
 def loading():
     screen.fill(white)
-    screen.blit(LOADING, ((display_width-LOADING_SHAPE[0])*2//3,(display_height-LOADING_SHAPE[1])//3))
-    screen.blit(LOADING_IMAGE, ((display_width-LOADING_IMAGE_SHAPE[0])//3,(display_height-LOADING_IMAGE_SHAPE[1])*2//3))
+    screen.blit(LOADING, ((display_width-LOADING_SHAPE[0])*3//4,(display_height-LOADING_SHAPE[1])//6))
+    screen.blit(LOADING_IMAGE, ((display_width-LOADING_IMAGE_SHAPE[0])//3,(display_height-LOADING_IMAGE_SHAPE[1])*3//4))
     pygame.display.flip()
 
 def noperson(print_time):

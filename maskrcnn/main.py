@@ -46,7 +46,7 @@ def main():
             for event in pygame.event.get() :
                 if event.type == pygame.KEYDOWN :
                     if event.key == pygame.K_p:
-                        PAUSE()
+                        PAUSE(CURRENT, PREV)
 
     except KeyboardInterrupt or SystemExit :
         QUIT()
