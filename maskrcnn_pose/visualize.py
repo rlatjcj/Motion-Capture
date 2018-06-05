@@ -18,6 +18,12 @@ def MakeText(msg, size, font='freesansbold.ttf'):
 
     screen.blit(TextSurf, TextRect)
 
+def MakeText2(msg, size, font='freesansbold.ttf'):
+    Text = pygame.font.Font(font, size) # font & size
+    TextSurf, TextRect = text_objects(msg, Text)
+    TextRect.center = (display_width//2,display_height//2)
+
+    screen.blit(TextSurf, TextRect)
 
 def text_objects(text, font) :
     textSurface = font.render(text, True, cyan)

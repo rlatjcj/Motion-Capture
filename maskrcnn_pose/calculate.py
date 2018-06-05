@@ -2,7 +2,7 @@ import math
 import numpy as np
 
 PERCENTILE_THRESHOLD = 0.01
-ANGLE_THRESHOLD = 15 # angle thresholds
+ANGLE_THRESHOLD = 50 # angle thresholds
 
 
 # GANE1
@@ -63,7 +63,7 @@ def compare_keypoints(distances, thresholds = ANGLE_THRESHOLD) :
     temp = np.array(distances)
     idx = np.where(temp > thresholds)
 
-    if len(temp) >= 2 :
+    if len(temp) < 5 :
         SUCCESS = False
         FAIL = True
         return  SUCCESS, FAIL

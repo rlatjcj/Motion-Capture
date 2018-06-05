@@ -15,3 +15,5 @@ display_height = pygame.display.Info().current_h
 # for fullscreen
 #screen = pygame.display.set_mode([display_width, display_height], pygame.FULLSCREEN | pygame.NOFRAME | pygame.HWSURFACE, 32)
 screen = pygame.display.set_mode([display_width, display_height])
+
+clock = pygame.time.Clock()

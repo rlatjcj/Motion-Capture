@@ -1,6 +1,6 @@
 import numpy as np
 import os
-os.chdir("maskrcnn_pose/")
+#os.chdir("maskrcnn_pose/")
 import model as modellib
 
 import cv2
@@ -9,9 +9,10 @@ import numpy as np
 from config import Config
 
 from stage import DETERMINE_STAGE
+from stage import DETERMINE_STAGE2
+
 import calculate
-import joint
-from joint import JointConfig
+from joint import *
 
 MODEL_DIR = "./log/"
 
@@ -63,31 +64,46 @@ model.load_weights(MODEL, by_name=True)
 def dist(x,y):
     return np.sqrt(np.sum((x-y)**2))
 
+#VIDEO = 0
+VIDEO="./image/data.mp4"
 
+#VIDEO = 0
 # function
 def SegImg(img, READY, STAGE, LIMIT=None, GAME=True, SUCCESS=False, FAIL=False):
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(VIDEO)
     ret, img = cap.read()
+    ret
+    #img = cv2.imread("../../gong.jpg")
     import matplotlib.pyplot as plt
     plt.imshow(img)
+
     # Run detection
     result = model.detect_keypoint([img], verbose=0)
 
-    # GAME1 & GAME2  r값 공유
+    # GAME1 & GAME2  r
     r = result[0]
 
-    if READY and GAME == True:
-        person_index = np.where(r["class_ids"] == 1)
+    # CHECK AREA
+    area_rois = (r["rois"][:,2]-r["rois"][:,0])*(r["rois"][:,3]-r["rois"][:,1])
+    area_rois
+    # SELECT PERSON area > 9999 & class_ids == 1
+    person_index = np.where(area_rois >= 5000)
+    person_index = person_index[0]
+    person_index
+    rois = r["rois"][person_index]
+    masks = r["masks"][:,:,person_index]
+    class_ids = r["class_ids"][person_index]
+    keypoints = r["keypoints"][person_index,:,:]
 
+    if READY and GAME == True:
         # if there are no people in image
-        if len(person_index[0]) == 0:
+        if len(person_index) == 0:
             return SUCCESS, FAIL, None
 
         # STAGE
-        bounding, center = STAGE.determine_stage(r["masks"][:,:,0])
-
-        rois = r["rois"]
-
+        bounding, center = STAGE.determine_stage(masks[:,:,0])
+        bounding
+        center
         # calculate roi's center position
         distances = []
         for idx in range(len(rois)) :
@@ -99,9 +115,7 @@ def SegImg(img, READY, STAGE, LIMIT=None, GAME=True, SUCCESS=False, FAIL=False):
 
         final_instance_index = np.array(distances).argsort()[:LIMIT]
 
-        masks = r["masks"]
         person_masks = masks[:,:,final_instance_index]
-
         person_masks = np.sum(person_masks, axis=2, dtype=np.uint8)
         person_masks[np.where(person_masks == 0)] = 0
         person_masks[np.where(person_masks != 0)] = 200
@@ -109,9 +123,9 @@ def SegImg(img, READY, STAGE, LIMIT=None, GAME=True, SUCCESS=False, FAIL=False):
         # for postprocessing about person_masks
         person_masks = cv2.erode(person_masks, np.ones((5,5)), iterations=3)
         person_masks = cv2.dilate(person_masks, np.ones((5,5)), iterations=3)
-
+        cv2.imwrite("result.png" , person_masks)
         result = person_masks - bounding
-
+        print(bounding)
         # # of segmentation for person
         seg_num = np.array(np.where(person_masks == 200)).shape[1]
 
@@ -124,56 +138,58 @@ def SegImg(img, READY, STAGE, LIMIT=None, GAME=True, SUCCESS=False, FAIL=False):
         return SUCCESS, FAIL, result
 
     if READY and GAME == False:
-        person_index = np.where(r["class_ids"] == 1)
 
-        # if there are no people in image
-        if len(person_index[0]) < LIMIT :
-            return SUCCESS, FAIL
+        if len(person_index) <= 1 :
+            return SUCCESS, FAIL, None
 
-        center = img.shape[0]//2, img.shape[1]//2
-        rois = r["rois"]
+        centers = STAGE.determine_stage(masks[:,:,0])
 
         # calculate roi's center position
-        distances = []
-        for idx in range(len(rois)) :
-            x = (rois[idx][1] + rois[idx][3])//2
-            y = (rois[idx][0] + rois[idx][2])//2
-            pos = np.array([x,y])
-            distance = dist(pos, center)
-            distances.append(distance)
-        if len(person_index[0]) < LIMIT:
-            final_instance_index = np.array(distances).argsort()[:len(person_index[0])]
-        else:
-            final_instance_index = np.array(distances).argsort()[:LIMIT]
+        distances = [None for x in range(LIMIT)]
+        distances
 
-        rois = r["rois"][final_instance_index]
-        person_masks = r["masks"][:,:,final_instance_index]
-        plt.imshow(person_masks[:,:,0])
-        plt.imshow(person_masks[:,:,1])
+        for j in range(len(centers)) :
+            temp_distance = []
+            for idx in range(len(rois)) :
+                x = (rois[idx][1] + rois[idx][3])//2
+                y = (rois[idx][0] + rois[idx][2])//2
+                pos = np.array([x,y])
+                distance = dist(pos, centers[j])
+                temp_distance.append(distance)
+            distances[j] = temp_distance
+
+        distances
+        left_instance_index = np.array(distances[0]).argsort()[:1]
+        right_instance_index = np.array(distances[1]).argsort()[:1]
+        left_instance_index
+        right_instance_index
+
+
+        final_instance_index = [int(left_instance_index),int(right_instance_index)]
+        final_instance_index
+
+        rois = rois[final_instance_index,]
+        person_masks = masks[:,:,final_instance_index]
+
         # keypoint part
         # keypoint has 0 ~ 16 parts = 17 parts
-        keypoints = r['keypoints']
         person_keypoints = keypoints[final_instance_index,:,:]
+        person_keypoints.shape
 
         # add neck keypoint to 17 index = 18 part
-        person_keypoints = joint.add_neck_parts(img, person_keypoints, skeleton = parts_config.skeleton)
+        person_keypoints = add_neck_parts(img, person_keypoints, skeleton = parts_config.skeleton)
+        person_keypoints.shape
+        person_keypoints
 
         # draw skeleton image each person
-
-        person_keypoints_img, person_keypoints_masks = joint.display_person_keypoints(img, person_masks, person_keypoints, skeleton = parts_config.skeleton)
-
-        plt.imshow(person_keypoints_img)
-        plt.imshow(person_keypoints_masks[:,:,1])
-        # person_keypoints_img.shape = (708, 1114, 2)
+        person_keypoints_img , person_keypoints_masks = display_person_keypoints(img, person_masks, person_keypoints, skeleton = parts_config.skeleton)
 
         parts_angles = []
+        print(person_keypoints_masks.shape)
         # save person segfile
-        for i in range(len(person_index[0])):
-            cv2.imwrite("person_keypoints_img{}.png".format(i), person_keypoints_img[:,:,i])
+        for i in range(len(person_index)):
+            cv2.imwrite("person_keypoints_masks{}.png".format(i), person_keypoints_masks[:,:,i])
             parts_angles.append(calculate.all_parts_list(parts_config.parts_list, person_keypoints[i]))
-            print(parts_angles[i])
-        # algorithm
-        #matches, resi = joint.featureMatching(person_keypoints_img, rois)
 
         number_of_parts = len(parts_config.parts_list)
         distances = []
@@ -182,8 +198,11 @@ def SegImg(img, READY, STAGE, LIMIT=None, GAME=True, SUCCESS=False, FAIL=False):
             result = dist(parts_angles[0][idx], parts_angles[1][idx])
             distances.append(result)
 
+
         # for calculating whether compare keypoints
         SUCCESS, FAIL = calculate.compare_keypoints(distances)
-        print(SUCCESS, FAIL)
+        output = np.sum(person_keypoints_masks, axis=2)
+        #output.resize((480,640))
+        #cv2.imwrite("output.png" , output)
 
-        return SUCCESS, FAIL, np.sum(person_keypoints_img, axis=2)
+        return SUCCESS, FAIL, output

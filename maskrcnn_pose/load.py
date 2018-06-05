@@ -21,7 +21,12 @@ time_five.set_volume(1)
 
 sound_dict = {5: time_five, 4: time_four, 3: time_three, 2: time_two, 1: time_one}
 
-
+#import os
+#os.chdir("/workspace/motioncapture/maskrcnn_pose/image")
+#FIT_PRINT = pygame.image.load("p_POSITION.png")
+#FIT_PRINT_SHAPE = pygame.surfarray.array2d(FIT_PRINT).shape
+#FIT_PRINT
+#FIT_PRINT_SHAPE
 
 ################################################################################
 # IMAGE LOAD
@@ -149,4 +154,18 @@ GAME1_mush_cv = cv2.imread("./image/img_mush_cv.png", cv2.IMREAD_GRAYSCALE)
 GAME1_circle_cv = cv2.imread("./image/img_circle_cv.png", cv2.IMREAD_GRAYSCALE)
 GAME1_infi_cv = cv2.imread("./image/img_infi_cv.png", cv2.IMREAD_GRAYSCALE)
 GAME1_star_cv = cv2.imread("./image/img_star_cv.png", cv2.IMREAD_GRAYSCALE)
-#GAME1_heart_cv = cv2.imread("./image/img_heart_cv.png", cv2.IMREAD_GRAYSCALE)
+GAME1_heart_cv = cv2.imread("./image/img_heart_cv.png", cv2.IMREAD_GRAYSCALE)
+
+
+
+
+#GAME2_TEXT IMAGES_PER_GPU
+GAME2_MANSEI = pygame.image.load("./image/p_CHEERUP.png")
+GAME2_MANSEI_SHAPE = pygame.surfarray.array2d(GAME2_MANSEI).shape
+GAME2_LEG = pygame.image.load("./image/p_LEG.png")
+GAME2_LEG_SHAPE = pygame.surfarray.array2d(GAME2_LEG).shape
+
+GAME2_STAGE_1 = pygame.image.load("./image/p_GAME2_ROUND1.png")
+GAME2_STAGE_2 = pygame.image.load("./image/p_GAME2_ROUND2.png")
+STAGE_DICT2 = {1: GAME2_STAGE_1, 2: GAME2_STAGE_2}
+GAME2_STAGE_SHAPE = pygame.surfarray.array2d(GAME2_STAGE_1).shape

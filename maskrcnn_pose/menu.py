@@ -6,9 +6,12 @@ from load import *
 from settings import *
 from visualize import *
 
-camera = cv2.VideoCapture(0)
+VIDEO="./image/data.mp4"
+#VIDEO = 0
+camera = cv2.VideoCapture(VIDEO)
 LIMIT = 2
 teambattle = False
+
 
 
 def INTRO(CURRENT, PREV):
@@ -367,11 +370,17 @@ def GAME1(CURRENT, PREV):
         pygame.display.flip()
 
 
+
+
+
+
+
+
 def GAME2(CURRENT, PREV):
         pygame.mixer.music.fadeout(2000)
         global screen, LIMIT, teambattle, go_menu
         PREV = CURRENT
-        CURRENT = 2
+        CURRENT = 3
 
         # LOADING...
         loading()
@@ -390,11 +399,11 @@ def GAME2(CURRENT, PREV):
 
         # for initializing
         from segmentation import SegImg
-        from stage import DETERMINE_STAGE
+        from stage import DETERMINE_STAGE2
 
         ret, img = camera.read()
-        STAGE = DETERMINE_STAGE(display_height, display_width)
-        SegImg(img, READY, STAGE)
+        STAGE = DETERMINE_STAGE2(display_height, display_width)
+        SegImg(img, READY, STAGE, LIMIT, GAME=False)
 
         # for teambattle
         TEAM_LIST = ("DADDY", "MOMMY")
@@ -421,12 +430,7 @@ def GAME2(CURRENT, PREV):
                     pygame.mixer.music.load("./sound/game_bgm2.mp3")
                     pygame.mixer.music.play(-1, 0.0)
                     MUSIC_FLAG = False
-                elif STAGE.ROUND == 3:
-                    loading()
-                    pygame.mixer.music.fadeout(1000)
-                    pygame.mixer.music.load("./sound/game_bgm3.mp3")
-                    pygame.mixer.music.play(-1, 0.0)
-                    MUSIC_FLAG = False
+
 
             frame = video_setting(img)
             screen.blit(frame, (0,0))
@@ -463,6 +467,7 @@ def GAME2(CURRENT, PREV):
                                 start = time.time()
                                 READY = True
                                 timer_sound = 6
+            # if READY = TRUE
             else:
                 if TIME_STAGE-(time.time()-start) <= 0.01:
                     timer = math.ceil(TIME_INIT-(time.time()-start-TIME_STAGE))
@@ -487,10 +492,10 @@ def GAME2(CURRENT, PREV):
                             sound_dict[timer].play()
 
                     pygame.mixer.music.set_volume(0.5)
-                    MakeText("{}".format(timer), 200)
+                    MakeText2("{}".format(timer), 200)
 
                 else:
-                    screen.blit(STAGE_DICT[STAGE.ROUND], ((display_width-STAGE_SHAPE[0])//2,(display_height-STAGE_SHAPE[1])//2))
+                    screen.blit(STAGE_DICT2[STAGE.ROUND], ((display_width-GAME2_STAGE_SHAPE[0])//2,(display_height-GAME2_STAGE_SHAPE[1])//2))
 
             if SUCCESS:
                 pygame.mixer.music.set_volume(1)
@@ -535,12 +540,11 @@ def GAME2(CURRENT, PREV):
                                     PRINT_SUCCESS = False
                                     NO_PERSON = False
                                     STAGE.ROUND = 1
-                                    STAGE.version = {1: np.random.choice(STAGE.ROUND_1)}.get(STAGE.ROUND)
+                                    STAGE.version = {1: STAGE.ROUND_1}.get(STAGE.ROUND)
 
                     else:
-                        STAGE.version = {1: np.random.choice(STAGE.ROUND_1),
-                                         2: np.random.choice(STAGE.ROUND_2),
-                                         3: np.random.choice(STAGE.ROUND_3)}.get(STAGE.ROUND)
+                        STAGE.version = {1: STAGE.ROUND_1,
+                                         2: STAGE.ROUND_2}.get(STAGE.ROUND)
                         SUCCESS = False
                         PRINT_SUCCESS = False
 
@@ -570,9 +574,8 @@ def GAME2(CURRENT, PREV):
                             MENU_LIST[2] = False
                             MENU_LIST[3] = False
                             break
-                        STAGE.version = {1: np.random.choice(STAGE.ROUND_1),
-                                         2: np.random.choice(STAGE.ROUND_2),
-                                         3: np.random.choice(STAGE.ROUND_3)}.get(STAGE.ROUND)
+                        STAGE.version = {1: STAGE.ROUND_1,
+                                         2: STAGE.ROUND_2}.get(STAGE.ROUND)
 
                 else:
                     if (time.time()-print_time) >= 5:
@@ -585,7 +588,7 @@ def GAME2(CURRENT, PREV):
                             NO_PERSON = False
                             STAGE.ROUND = 1
                             MUSIC_FLAG = True
-                            STAGE.version = {1: np.random.choice(STAGE.ROUND_1)}.get(STAGE.ROUND)
+                            STAGE.version = {1: STAGE.ROUND_1}.get(STAGE.ROUND)
                         else:
                             if SUCCESS_CNT[0] > SUCCESS_CNT[1]:
                                 MakeText("DADDY TEAM WIN!", 200)
@@ -613,6 +616,5 @@ def GAME2(CURRENT, PREV):
 
                         MakeText("{} TEAM FAIL!".format(TEAM_LIST[TEAM_CNT]), 200)
 
-
-
             pygame.display.flip()
+            clock.tick(10)
