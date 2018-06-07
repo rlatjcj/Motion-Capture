@@ -52,7 +52,7 @@ def all_parts_list(parts_list, person_keypoints, img_shape) :
 def check_angles(abs_distances, thresholds = ANGLE_THRESHOLD) :
     idx = np.where(abs_distances > thresholds)
 
-    if len(temp) < 5 :
+    if len(abs_distances) < 5 :
         SUCCESS = True
         FAIL = False
         return  SUCCESS, FAIL
