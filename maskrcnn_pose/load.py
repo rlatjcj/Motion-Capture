@@ -118,6 +118,9 @@ FIT_PRINT_SHAPE = pygame.surfarray.array2d(FIT_PRINT).shape
 NOPERSON_PRINT = pygame.image.load("./image/p_NOPERSON.png")
 NOPERSON_PRINT_SHAPE = pygame.surfarray.array2d(NOPERSON_PRINT).shape
 
+MOREPERSON_PRINT = pygame.image.load("./image/p_MOREPERSON.png")
+MOREPERSON_PRINT_SHAPE = pygame.surfarray.array2d(MOREPERSON_PRINT).shape
+
 SUCCESS_PRINT = pygame.image.load("./image/p_SUCCESS.png")
 SUCCESS_PRINT_SHAPE = pygame.surfarray.array2d(SUCCESS_PRINT).shape
 FAIL_PRINT = pygame.image.load("./image/p_FAIL.png")

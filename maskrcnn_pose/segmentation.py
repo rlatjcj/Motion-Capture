@@ -1,6 +1,6 @@
 import numpy as np
 import os
-#os.chdir("maskrcnn_pose/")
+os.chdir("maskrcnn_pose/")
 import model as modellib
 
 import cv2
@@ -65,15 +65,15 @@ def dist(x,y):
     return np.sqrt(np.sum((x-y)**2))
 
 #VIDEO = 0
-VIDEO="./image/data.mp4"
+#VIDEO="./image/hotel.mp4"
 
 #VIDEO = 0
 # function
 def SegImg(img, READY, STAGE, LIMIT=None, GAME=True, SUCCESS=False, FAIL=False):
-    cap = cv2.VideoCapture(VIDEO)
-    ret, img = cap.read()
-    ret
-    #img = cv2.imread("../../gong.jpg")
+
+    #ret
+    img = cv2.imread("../../example.jpg")
+    shrink = cv2.resize(img, None, fx=0.4, fy=0.4, interpolation=cv2.INTER_AREA)
     import matplotlib.pyplot as plt
     plt.imshow(img)
 
@@ -99,11 +99,9 @@ def SegImg(img, READY, STAGE, LIMIT=None, GAME=True, SUCCESS=False, FAIL=False):
         # if there are no people in image
         if len(person_index) == 0:
             return SUCCESS, FAIL, None
-
         # STAGE
         bounding, center = STAGE.determine_stage(masks[:,:,0])
-        bounding
-        center
+
         # calculate roi's center position
         distances = []
         for idx in range(len(rois)) :
@@ -138,10 +136,15 @@ def SegImg(img, READY, STAGE, LIMIT=None, GAME=True, SUCCESS=False, FAIL=False):
         return SUCCESS, FAIL, result
 
     if READY and GAME == False:
+        LIMIT = 2
 
-        if len(person_index) <= 1 :
+        if len(person_index) == 0 :
             return SUCCESS, FAIL, None
+        elif len(person_index) == 1 :
+            return SUCCESS, FAIL, "MORE_PERSON"
 
+
+        #STAGE = DETERMINE_STAGE2(display_width, 1200)
         centers = STAGE.determine_stage(masks[:,:,0])
 
         # calculate roi's center position
@@ -188,7 +191,7 @@ def SegImg(img, READY, STAGE, LIMIT=None, GAME=True, SUCCESS=False, FAIL=False):
         print(person_keypoints_masks.shape)
         # save person segfile
         for i in range(len(person_index)):
-            cv2.imwrite("person_keypoints_masks{}.png".format(i), person_keypoints_masks[:,:,i])
+            #cv2.imwrite("person_keypoints_masks{}.png".format(i), person_keypoints_masks[:,:,i])
             parts_angles.append(calculate.all_parts_list(parts_config.parts_list, person_keypoints[i]))
 
         number_of_parts = len(parts_config.parts_list)
@@ -202,7 +205,7 @@ def SegImg(img, READY, STAGE, LIMIT=None, GAME=True, SUCCESS=False, FAIL=False):
         # for calculating whether compare keypoints
         SUCCESS, FAIL = calculate.compare_keypoints(distances)
         output = np.sum(person_keypoints_masks, axis=2)
-        #output.resize((480,640))
+        #output = cv2.resize(output, None, fx=0.3, fy=0.3, interpolation=cv2.INTER_AREA)
         #cv2.imwrite("output.png" , output)
 
         return SUCCESS, FAIL, output

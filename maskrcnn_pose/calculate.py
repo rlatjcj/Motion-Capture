@@ -2,7 +2,7 @@ import math
 import numpy as np
 
 PERCENTILE_THRESHOLD = 0.01
-ANGLE_THRESHOLD = 50 # angle thresholds
+ANGLE_THRESHOLD = 10 # angle thresholds
 
 
 # GANE1
@@ -18,6 +18,7 @@ def percentile(res_num, seg_num, SUCCESS=False, FAIL=False):
         FAIL = True
 
     return SUCCESS, FAIL
+
 
 def change(res_num, SUCCESS=False, FAIL=False):
     if res_num == 0:
@@ -44,7 +45,6 @@ def all_parts_list(parts_list, person_keypoints) :
         side_one = keypoint_list[three_points[0]][:2]
         origin = keypoint_list[three_points[1]][:2]
         side_two = keypoint_list[three_points[2]][:2]
-
 
         cord_x, cord_y = (side_one[1]-origin[1]), (side_one[0]-origin[0])
         cord_x2, cord_y2 = (side_two[1]-origin[1]), (side_two[0]-origin[0])
