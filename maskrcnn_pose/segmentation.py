@@ -1,6 +1,6 @@
 import numpy as np
 import os
-os.chdir("maskrcnn_pose/")
+#os.chdir("maskrcnn_pose/")
 import model as modellib
 
 import cv2
@@ -67,15 +67,14 @@ def dist(x,y):
 #VIDEO = 0
 #VIDEO="./image/hotel.mp4"
 
-#VIDEO = 0
 # function
 def SegImg(img, READY, STAGE, LIMIT=None, GAME=True, SUCCESS=False, FAIL=False):
 
     #ret
-    img = cv2.imread("../../example.jpg")
-    shrink = cv2.resize(img, None, fx=0.4, fy=0.4, interpolation=cv2.INTER_AREA)
-    import matplotlib.pyplot as plt
-    plt.imshow(img)
+    #img = cv2.imread("../../test.jpeg")
+    #shrink = cv2.resize(img, None, fx=0.4, fy=0.4, interpolation=cv2.INTER_AREA)
+    #import matplotlib.pyplot as plt
+    #plt.imshow(img)
 
     # Run detection
     result = model.detect_keypoint([img], verbose=0)
@@ -85,9 +84,9 @@ def SegImg(img, READY, STAGE, LIMIT=None, GAME=True, SUCCESS=False, FAIL=False):
 
     # CHECK AREA
     area_rois = (r["rois"][:,2]-r["rois"][:,0])*(r["rois"][:,3]-r["rois"][:,1])
-    area_rois
-    # SELECT PERSON area > 9999 & class_ids == 1
-    person_index = np.where(area_rois >= 5000)
+
+    # SELECT PERSON area > 9999
+    person_index = np.where(area_rois >= 10000)
     person_index = person_index[0]
     person_index
     rois = r["rois"][person_index]
@@ -143,32 +142,10 @@ def SegImg(img, READY, STAGE, LIMIT=None, GAME=True, SUCCESS=False, FAIL=False):
         elif len(person_index) == 1 :
             return SUCCESS, FAIL, "MORE_PERSON"
 
+        # ground truth cordinates is in STAGE.determine_stage !!!!!!!!!!!
+        # ground_truth = STAGE.determine_stage(masks[:,:,0])
 
-        #STAGE = DETERMINE_STAGE2(display_width, 1200)
-        centers = STAGE.determine_stage(masks[:,:,0])
-
-        # calculate roi's center position
-        distances = [None for x in range(LIMIT)]
-        distances
-
-        for j in range(len(centers)) :
-            temp_distance = []
-            for idx in range(len(rois)) :
-                x = (rois[idx][1] + rois[idx][3])//2
-                y = (rois[idx][0] + rois[idx][2])//2
-                pos = np.array([x,y])
-                distance = dist(pos, centers[j])
-                temp_distance.append(distance)
-            distances[j] = temp_distance
-
-        distances
-        left_instance_index = np.array(distances[0]).argsort()[:1]
-        right_instance_index = np.array(distances[1]).argsort()[:1]
-        left_instance_index
-        right_instance_index
-
-
-        final_instance_index = [int(left_instance_index),int(right_instance_index)]
+        final_instance_index = np.array(-area_rois).argsort()[:LIMIT]
         final_instance_index
 
         rois = rois[final_instance_index,]
@@ -190,7 +167,8 @@ def SegImg(img, READY, STAGE, LIMIT=None, GAME=True, SUCCESS=False, FAIL=False):
         parts_angles = []
         print(person_keypoints_masks.shape)
         # save person segfile
-        for i in range(len(person_index)):
+        person_index
+        for i in range(LIMIT):
             #cv2.imwrite("person_keypoints_masks{}.png".format(i), person_keypoints_masks[:,:,i])
             parts_angles.append(calculate.all_parts_list(parts_config.parts_list, person_keypoints[i]))
 
@@ -205,7 +183,6 @@ def SegImg(img, READY, STAGE, LIMIT=None, GAME=True, SUCCESS=False, FAIL=False):
         # for calculating whether compare keypoints
         SUCCESS, FAIL = calculate.compare_keypoints(distances)
         output = np.sum(person_keypoints_masks, axis=2)
-        #output = cv2.resize(output, None, fx=0.3, fy=0.3, interpolation=cv2.INTER_AREA)
-        #cv2.imwrite("output.png" , output)
+        cv2.imwrite("output.png" , output)
 
         return SUCCESS, FAIL, output
