@@ -18,6 +18,12 @@ def MakeText(msg, size, font='freesansbold.ttf'):
 
     screen.blit(TextSurf, TextRect)
 
+def MakeText2(msg, size, font='freesansbold.ttf'):
+    Text = pygame.font.Font(font, size) # font & size
+    TextSurf, TextRect = text_objects(msg, Text)
+    TextRect.center = (display_width//2,display_height//2)
+
+    screen.blit(TextSurf, TextRect)
 
 def text_objects(text, font) :
     textSurface = font.render(text, True, cyan)
@@ -136,6 +142,29 @@ def noperson(print_time):
 def position(TIME_INIT):
     screen.blit(FIT_PRINT, (display_width-FIT_PRINT_SHAPE[0],10))
     screen.blit(FIT_POSE, ((display_width-FIT_SHAPE[0])//2,display_height-FIT_SHAPE[1]))
+    for event in pygame.event.get() :
+        if event.type == pygame.KEYDOWN :
+            if event.key == pygame.K_SPACE:
+                click_sound.play()
+                return False
+
+    return True
+
+def noperson2(print_time, result):
+    pygame.mixer.music.set_volume(1)
+    if result == None :
+        screen.blit(NOPERSON_PRINT, ((display_width-NOPERSON_PRINT_SHAPE[0])//2,(display_height-NOPERSON_PRINT_SHAPE[1])//2))
+    else : # mor person needs
+        screen.blit(MOREPERSON_PRINT, ((display_width-MOREPERSON_PRINT_SHAPE[0])//2,(display_height-MOREPERSON_PRINT_SHAPE[1])//2))
+    if (time.time()-print_time) >= 5:
+        return False
+    else:
+        return True
+
+def position2(TIME_INIT):
+    screen.blit(FIT_PRINT, (display_width//2*0.75,10))
+    screen.blit(FIT_POSE, ((display_width-FIT_SHAPE[0])//4*1,display_height-FIT_SHAPE[1]))
+    screen.blit(FIT_POSE, ((display_width-FIT_SHAPE[0])//4*3,display_height-FIT_SHAPE[1]))
     for event in pygame.event.get() :
         if event.type == pygame.KEYDOWN :
             if event.key == pygame.K_SPACE:

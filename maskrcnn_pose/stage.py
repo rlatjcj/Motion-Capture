@@ -283,3 +283,74 @@ class DETERMINE_STAGE():
             img.blit(star, ((self.width-rect_width)//2, self.height-rect_height))
 
             return img
+
+
+
+
+#GAME2_mansei = pygame.image.load("./image/p_CHEERUP.png")
+#GAME2_leg = pygame.image.load("./image/p_LEG.png")
+class DETERMINE_STAGE2():
+
+    def __init__(self, height, width):
+        self.ROUND = 1
+        self.height = height
+        self.width = width
+
+        self.ROUND_LIMIT = 2
+        # the number of STAGEs for each round
+        self.ROUND_1 = 1
+        self.ROUND_2 = 1
+        self.version = {1: self.ROUND_1,
+                        2: self.ROUND_2}.get(self.ROUND)
+
+    # STAGE.ROUND += 1
+    def determine_stage(self, img=None, flag=True):
+        self.STAGE_LIST = {"1": self.mansei,
+                           "2": self.leg}.get("{}".format(self.ROUND))
+
+        return self.STAGE_LIST(img, flag)
+
+
+    def mansei(self, img=None, flag=True):
+        if flag :
+            seg_height = self.height
+            seg_width = self.width
+            rect_width = seg_width - FIT_SHAPE[0]
+            rect_height = seg_height - FIT_SHAPE[1]
+
+            center1 = np.array([rect_width//4*1, rect_height])
+            center2 = np.array([rect_width//4*3, rect_height])
+            print(center1, center2)
+            return [center1, center2]
+
+        else:
+            # contribute
+            rect_width = self.height * 4 // 5
+            rect_height = self.height * 1 // 5
+            MANSEI = pygame.transform.scale(GAME2_MANSEI, (rect_width, rect_height))
+            img.blit(MANSEI, ((self.width-rect_width)//2, 10))
+
+            return img
+
+
+
+    # 3-2 STAGE
+    def leg(self, img=None, flag=True):
+        if flag :
+            seg_height = self.height
+            seg_width = self.width
+            rect_width = seg_width - FIT_SHAPE[0]
+            rect_height = seg_height - FIT_SHAPE[1]
+
+            center1 = np.array([rect_width//4*1, rect_height])
+            center2 = np.array([rect_width//4*3, rect_height])
+            print(center1, center2)
+            return [center1, center2]
+
+        else:
+            rect_width = self.height * 4 // 5
+            rect_height = self.height * 1 // 5
+            LEG = pygame.transform.scale(GAME2_LEG, (rect_width, rect_height))
+            img.blit(LEG, ((self.width-rect_width)//2, 10))
+
+            return img

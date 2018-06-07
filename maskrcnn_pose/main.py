@@ -7,13 +7,12 @@ from visualize import *
 from menu import *
 from settings import *
 
-
-clock = pygame.time.Clock()
-
+#MENU_LIST
 MENU = {0: INTRO, 1: CHOOSE_GAME, 2: GAME1, 3: GAME2, 4: SETTING}
 
 def main():
     try:
+        '''
         intro = cv2.VideoCapture("./sound/kt_motion_intro.mp4")
         while True:
             ret, img = intro.read()
@@ -23,7 +22,7 @@ def main():
             screen.blit(frame_intro, (0,0))
             pygame.display.flip()
             clock.tick(30)
-
+        '''
         CURRENT = 0
         PREV = 0
         INTRO_MUSIC = True
@@ -46,7 +45,7 @@ def main():
             for event in pygame.event.get() :
                 if event.type == pygame.KEYDOWN :
                     if event.key == pygame.K_p:
-                        PAUSE()
+                        PAUSE(CURRENT, PREV)
 
     except KeyboardInterrupt or SystemExit :
         QUIT()
