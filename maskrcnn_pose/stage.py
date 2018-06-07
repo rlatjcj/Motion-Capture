@@ -310,7 +310,7 @@ class DETERMINE_STAGE2():
 
         return self.STAGE_LIST(img, flag)
 
-
+    # STAGE 1
     def mansei(self, img=None, flag=True):
         if flag :
             seg_height = self.height
@@ -333,7 +333,7 @@ class DETERMINE_STAGE2():
 
 
 
-    # 3-2 STAGE
+    # STAGE 2
     def leg(self, img=None, flag=True):
         if flag :
             seg_height = self.height

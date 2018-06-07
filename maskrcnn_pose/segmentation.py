@@ -12,6 +12,8 @@ from stage import DETERMINE_STAGE2
 import calculate
 from joint import *
 
+
+
 MODEL_DIR = "./log/"
 
 class InferenceConfig(Config):
