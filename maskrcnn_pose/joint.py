@@ -12,6 +12,7 @@ import numpy as np
 
 class JointConfig(object) :
     # Skeleton information
+    # This is for draw
     skeleton = [0,17,5,7,5,11,5,17,6,8,6,12,6,17,7,9,8,10,11,12,11,13,13,15,12,14,14,16]
 
     # Part information
@@ -77,7 +78,6 @@ def random_colors(N, bright=True):
     random.shuffle(colors)
     return colors
 
-
 def display_person_keypoints(images, masks, keypoints, skeleton = None):
     """
     images : images
@@ -85,27 +85,26 @@ def display_person_keypoints(images, masks, keypoints, skeleton = None):
     keypoints : 0 ~ 17 keypoints
     skeleton : [0,17,5,7,5,11,5,17,6,8,6,12,6,17,7,9,8,10,11,12,11,13,13,15,12,14,14,16]
     """
-    print(keypoints)
     # Number of persons
     N = keypoints.shape[0] # 2,18 3
-    print(N)
     # If There are no person
     if not N:
         print("\n*** No persons to display *** \n")
 
-    colors = ((255,255,255),(255,255,255))
+    #colors = random_colors(N)
+    colors = ((0,0,255),(0,0,255))
     color = None
     keypoints = keypoints
     for i in range(N):
         color = colors[i]
         mask = masks[:,:,i]
         mask[np.where(mask == 0)] = 0
-        mask[np.where(mask != 0)] = 0
+        mask[np.where(mask != 0)] = 200
 
         # draw circle
         for Joint in keypoints[i]:
             if (Joint[2] != 0):
-                cv2.circle(mask,(Joint[0], Joint[1]), 2, color, 1)
+                cv2.circle(mask,(Joint[0], Joint[1]), 2, color, 4)
 
         #draw skeleton connection
         if (len(skeleton)):
@@ -114,15 +113,13 @@ def display_person_keypoints(images, masks, keypoints, skeleton = None):
                 start_index, end_index = limb[0], limb[1]  # connection joint index from 0 to 17
                 Joint_start = keypoints[i][start_index]
                 Joint_end = keypoints[i][end_index]
-                print(Joint_start)
-                print(Joint_end)
                 # Joint:(x,y,v)
                 if ((Joint_start[2] != 0) & (Joint_end[2] != 0)):
                     # print(color)VIDEO
                     start = tuple(Joint_start[:2])
                     end = tuple(Joint_end[:2])
-                    cv2.line(mask, start, end, color, 3)
-                    cv2.line(images, start, end, color, 3)
+                    cv2.line(mask, start, end, color, 2)
+                    cv2.line(images, start, end, color, 2)
 
     return images, masks
 
