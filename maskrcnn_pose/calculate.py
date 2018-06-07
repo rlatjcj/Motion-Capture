@@ -2,23 +2,10 @@ import math
 import numpy as np
 
 PERCENTILE_THRESHOLD = 0.01
-ANGLE_THRESHOLD = 50 # angle thresholds
+ANGLE_THRESHOLD = 30 # angle thresholds
 
 
 # GANE1
-# for calculating percentile
-def percentile(res_num, seg_num, SUCCESS=False, FAIL=False):
-    percent = res_num / seg_num
-
-    if percent < PERCENTILE_THRESHOLD:
-        print('percentile is {:.2f}! SUCCESS!'.format(percent))
-        SUCCESS = True
-    else:
-        print('percentile is {:.2f}! FAIL!'.format(percent))
-        FAIL = True
-
-    return SUCCESS, FAIL
-
 def change(res_num, SUCCESS=False, FAIL=False):
     if res_num == 0:
         SUCCESS = True
@@ -30,10 +17,12 @@ def change(res_num, SUCCESS=False, FAIL=False):
 
 
 # GAME2
-def all_parts_list(parts_list, person_keypoints) :
+def all_parts_list(parts_list, person_keypoints, img_shape) :
     '''
     person_keypoints : 0 ~ 17, the number of 18
-    parts_list : insterest parts list
+    parts_list : insterest parts listom
+    person_keypoints : x, y
+
     output : parts_list'x angle list
     '''
     result = []
@@ -41,33 +30,34 @@ def all_parts_list(parts_list, person_keypoints) :
         three_points = parts_list[i]
         keypoint_list = person_keypoints
 
+        img_y = img_shape[0]
+
         side_one = keypoint_list[three_points[0]][:2]
         origin = keypoint_list[three_points[1]][:2]
         side_two = keypoint_list[three_points[2]][:2]
 
+        cord_x, cord_y = (side_one[0]-origin[0]), ((img_y-side_one[1])-(img_y-origin[1]))
+        cord_x2, cord_y2 = (side_two[0]-origin[0]), ((img_y-side_two[1])-(img_y-origin[1]))
 
-        cord_x, cord_y = (side_one[1]-origin[1]), (side_one[0]-origin[0])
-        cord_x2, cord_y2 = (side_two[1]-origin[1]), (side_two[0]-origin[0])
+        inner_a_b = (cord_x*cord_x2) + (cord_y*cord_y2)
+        abs_a = np.sqrt(cord_x**2+cord_y**2)
+        abs_b = np.sqrt(cord_x2**2+cord_y2**2)
+        output = (inner_a_b)/(abs_a*abs_b)
 
-        # math.atan2(y,x)
-        a = math.degrees(math.atan2(cord_y,cord_x))
-        b = math.degrees(math.atan2(cord_y2,cord_x2))
-
-        angle = np.abs(a) + np.abs(b)
+        angle = math.degrees(math.acos(output))
         result.append(angle)
     return(result)
 
 
-
-def compare_keypoints(distances, thresholds = ANGLE_THRESHOLD) :
-    temp = np.array(distances)
+def check_angles(abs_distances, thresholds = ANGLE_THRESHOLD) :
+    temp = np.array(abs_distances)
     idx = np.where(temp > thresholds)
 
     if len(temp) < 5 :
-        SUCCESS = False
-        FAIL = True
-        return  SUCCESS, FAIL
-    else :
         SUCCESS = True
         FAIL = False
+        return  SUCCESS, FAIL
+    else :
+        SUCCESS = False
+        FAIL = True
         return  SUCCESS, FAIL

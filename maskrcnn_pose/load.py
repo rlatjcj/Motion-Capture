@@ -92,8 +92,8 @@ FIRSTTIME_norm = pygame.image.load("./image/b_FIRSTTIME.png")
 FIRSTTIME_high = pygame.image.load("./image/bb_FIRSTTIME.png")
 RESTART_norm = pygame.image.load("./image/b_RESTART.png")
 RESTART_high = pygame.image.load("./image/bb_RESTART.png")
-RESTART_IMAGE = pygame.image.load("./image/img_RESTART.png")
-RESTART_IMAGE_SHAPE = pygame.surfarray.array2d(RESTART_IMAGE).shape
+RESTART_PRINT = pygame.image.load("./image/p_RESTART.png")
+RESTART_PRINT_SHAPE = pygame.surfarray.array2d(RESTART_PRINT).shape
 
 BUTTON_SHAPE = pygame.surfarray.array2d(START_norm).shape
 
@@ -107,6 +107,10 @@ READY_IMAGE = pygame.image.load("./image/img_READY.png")
 READY_IMAGE_SHAPE = pygame.surfarray.array2d(READY_IMAGE).shape
 READY_IMAGE = pygame.transform.scale(READY_IMAGE, (READY_IMAGE_SHAPE[0]//3, READY_IMAGE_SHAPE[1]//3))
 READY_IMAGE_SHAPE = pygame.surfarray.array2d(READY_IMAGE).shape
+DADDY_READY_PRINT = pygame.image.load("./image/p_DADDY_R.png")
+DADDY_READY_PRINT_SHAPE = pygame.surfarray.array2d(DADDY_READY_PRINT).shape
+MOMMY_READY_PRINT = pygame.image.load("./image/p_MOMMY_R.png")
+MOMMY_READY_PRINT_SHAPE = pygame.surfarray.array2d(MOMMY_READY_PRINT).shape
 LOADING = pygame.image.load("./image/p_LOADING.png")
 LOADING_SHAPE = pygame.surfarray.array2d(LOADING).shape
 LOADING_IMAGE = pygame.image.load("./image/img_LOADING.png")
@@ -118,29 +122,54 @@ FIT_PRINT_SHAPE = pygame.surfarray.array2d(FIT_PRINT).shape
 NOPERSON_PRINT = pygame.image.load("./image/p_NOPERSON.png")
 NOPERSON_PRINT_SHAPE = pygame.surfarray.array2d(NOPERSON_PRINT).shape
 
+MOREPERSON_PRINT = pygame.image.load("./image/p_MOREPERSON.png")
+MOREPERSON_PRINT_SHAPE = pygame.surfarray.array2d(MOREPERSON_PRINT).shape
+
 SUCCESS_PRINT = pygame.image.load("./image/p_SUCCESS.png")
 SUCCESS_PRINT_SHAPE = pygame.surfarray.array2d(SUCCESS_PRINT).shape
 FAIL_PRINT = pygame.image.load("./image/p_FAIL.png")
 FAIL_PRINT_SHAPE = pygame.surfarray.array2d(FAIL_PRINT).shape
 SUCCESS_IMAGE = pygame.image.load("./image/img_SUCCESS.png")
 SUCCESS_IMAGE_SHAPE = pygame.surfarray.array2d(SUCCESS_IMAGE).shape
-SUCCESS_IMAGE = pygame.transform.scale(SUCCESS_IMAGE, (SUCCESS_IMAGE_SHAPE[0]//2, SUCCESS_IMAGE_SHAPE[1]//2))
+SUCCESS_IMAGE = pygame.transform.scale(SUCCESS_IMAGE, (SUCCESS_IMAGE_SHAPE[0], SUCCESS_IMAGE_SHAPE[1]))
 SUCCESS_IMAGE_SHAPE = pygame.surfarray.array2d(SUCCESS_IMAGE).shape
 FAIL_IMAGE = pygame.image.load("./image/img_FAIL.png")
 FAIL_IMAGE_SHAPE = pygame.surfarray.array2d(FAIL_IMAGE).shape
 ROUND_CLEAR_PRINT = pygame.image.load("./image/p_CLEAR.png")
 ROUND_CLEAR_PRINT_SHAPE = pygame.surfarray.array2d(ROUND_CLEAR_PRINT).shape
+ROUND_CLEAR_IMAGE = pygame.image.load("./image/img_CLEAR.png")
+ROUND_CLEAR_IMAGE_SHAPE = pygame.surfarray.array2d(ROUND_CLEAR_IMAGE).shape
+ROUND_CLEAR_IMAGE = pygame.transform.scale(ROUND_CLEAR_IMAGE, (ROUND_CLEAR_IMAGE_SHAPE[0]//2, ROUND_CLEAR_IMAGE_SHAPE[1]//2))
+ROUND_CLEAR_IMAGE_SHAPE = pygame.surfarray.array2d(ROUND_CLEAR_IMAGE).shape
+DADDY_FAIL_PRINT = pygame.image.load("./image/p_DADDY_F.png")
+DADDY_FAIL_PRINT_SHAPE = pygame.surfarray.array2d(DADDY_FAIL_PRINT).shape
+MOMMY_FAIL_PRINT = pygame.image.load("./image/p_MOMMY_F.png")
+DADDY_FAIL_PRINT_SHAPE = pygame.surfarray.array2d(MOMMY_FAIL_PRINT).shape
+DADDY_WIN_PRINT = pygame.image.load("./image/p_DADDY_V.png")
+DADDY_WIN_PRINT_SHAPE = pygame.surfarray.array2d(DADDY_WIN_PRINT).shape
+MOMMY_WIN_PRINT = pygame.image.load("./image/p_MOMMY_V.png")
+MOMMY_WIN_PRINT_SHAPE = pygame.surfarray.array2d(MOMMY_WIN_PRINT).shape
+DRAW_PRINT = pygame.image.load("./image/p_DRAW.png")
+DRAW_PRINT_SHAPE = pygame.surfarray.array2d(DRAW_PRINT).shape
+DRAW_IMAGE = pygame.image.load("./image/img_DRAW.png")
+DRAW_IMAGE_SHAPE = pygame.surfarray.array2d(DRAW_IMAGE).shape
+DRAW_IMAGE = pygame.transform.scale(DRAW_IMAGE, (DRAW_IMAGE_SHAPE[0]//3, DRAW_IMAGE_SHAPE[1]//3))
+DRAW_IMAGE_SHAPE = pygame.surfarray.array2d(DRAW_IMAGE).shape
+DADDY_ROUND_CLEAR_PRINT = pygame.image.load("./image/p_DADDY_S.png")
+DADDY_ROUND_CLEAR_PRINT_SHAPE = pygame.surfarray.array2d(DADDY_ROUND_CLEAR_PRINT).shape
+MOMMY_ROUND_CLEAR_PRINT = pygame.image.load("./image/p_MOMMY_S.png")
+MOMMY_ROUND_CLEAR_PRINT_SHAPE = pygame.surfarray.array2d(MOMMY_ROUND_CLEAR_PRINT).shape
 
 # load images about stages of GAME1
-STAGE_1 = pygame.image.load("./image/img_GAME1_ROUND1.png")
-STAGE_2 = pygame.image.load("./image/img_GAME1_ROUND2.png")
-STAGE_3 = pygame.image.load("./image/img_GAME1_ROUND3.png")
+STAGE_1 = pygame.image.load("./image/p_GAME1_ROUND1.png")
+STAGE_2 = pygame.image.load("./image/p_GAME1_ROUND2.png")
+STAGE_3 = pygame.image.load("./image/p_GAME1_ROUND3.png")
 STAGE_DICT = {1: STAGE_1, 2: STAGE_2, 3: STAGE_3}
 STAGE_SHAPE = pygame.surfarray.array2d(STAGE_1).shape
 
 # for print image
 GAME1_circle = pygame.image.load("./image/img_circle.png")
-#GAME1_heart = pygame.image.load("./image/img_heart.png")
+GAME1_heart = pygame.image.load("./image/img_heart.png")
 GAME1_infi = pygame.image.load("./image/img_infi.png")
 GAME1_mush = pygame.image.load("./image/img_mush.png")
 GAME1_star = pygame.image.load("./image/img_star.png")
@@ -155,9 +184,6 @@ GAME1_circle_cv = cv2.imread("./image/img_circle_cv.png", cv2.IMREAD_GRAYSCALE)
 GAME1_infi_cv = cv2.imread("./image/img_infi_cv.png", cv2.IMREAD_GRAYSCALE)
 GAME1_star_cv = cv2.imread("./image/img_star_cv.png", cv2.IMREAD_GRAYSCALE)
 GAME1_heart_cv = cv2.imread("./image/img_heart_cv.png", cv2.IMREAD_GRAYSCALE)
-
-
-
 
 #GAME2_TEXT IMAGES_PER_GPU
 GAME2_MANSEI = pygame.image.load("./image/p_CHEERUP.png")

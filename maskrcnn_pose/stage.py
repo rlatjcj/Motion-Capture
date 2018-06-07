@@ -285,9 +285,10 @@ class DETERMINE_STAGE():
             return img
 
 
+
+
 #GAME2_mansei = pygame.image.load("./image/p_CHEERUP.png")
 #GAME2_leg = pygame.image.load("./image/p_LEG.png")
-
 class DETERMINE_STAGE2():
 
     def __init__(self, height, width):
@@ -309,18 +310,16 @@ class DETERMINE_STAGE2():
 
         return self.STAGE_LIST(img, flag)
 
-
-
+    # STAGE 1
     def mansei(self, img=None, flag=True):
         if flag :
-            seg_height = img.shape[0]
-            seg_width = img.shape[1]
-            rect_width = seg_height * 4 // 5
-            rect_height = seg_height * 1 // 5
+            seg_height = self.height
+            seg_width = self.width
+            rect_width = seg_width - FIT_SHAPE[0]
+            rect_height = seg_height - FIT_SHAPE[1]
 
-            center1 = np.array([seg_width//4, seg_height-rect_height//2])
-            center2 = np.array([seg_width//4*3, seg_height-rect_height//2])
-            print("SEG, RECT:", seg_height, seg_width, rect_width, rect_height)
+            center1 = np.array([rect_width//4*1, rect_height])
+            center2 = np.array([rect_width//4*3, rect_height])
             return [center1, center2]
 
         else:
@@ -334,17 +333,16 @@ class DETERMINE_STAGE2():
 
 
 
-    # 3-2 STAGE
+    # STAGE 2
     def leg(self, img=None, flag=True):
         if flag :
-            seg_height = img.shape[0]
-            seg_width = img.shape[1]
-            rect_width = seg_height * 4 // 5
-            rect_height = seg_height * 1 // 5
+            seg_height = self.height
+            seg_width = self.width
+            rect_width = seg_width - FIT_SHAPE[0]
+            rect_height = seg_height - FIT_SHAPE[1]
 
-            center1 = np.array([seg_width//4, seg_height-rect_height//2])
-            center2 = np.array([seg_width//4*3, seg_height-rect_height//2])
-            print("SEG, RECT:", seg_height, seg_width, rect_width, rect_height)
+            center1 = np.array([rect_width//4*1, rect_height])
+            center2 = np.array([rect_width//4*3, rect_height])
             return [center1, center2]
 
         else:

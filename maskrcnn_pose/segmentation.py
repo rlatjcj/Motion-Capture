@@ -1,6 +1,4 @@
 import numpy as np
-import os
-#os.chdir("maskrcnn_pose/")
 import model as modellib
 
 import cv2
@@ -14,6 +12,66 @@ from stage import DETERMINE_STAGE2
 import calculate
 from joint import *
 
+leg_label1 = [83.65840977699015,
+                17.626292629082677,
+                156.55267426830184,
+                89.39508522238597,
+                99.8315555417711,
+                139.5958684915879,
+                80.82267053256157,
+                14.600449140468962,
+                170.30105914869307,
+                106.16452451475014,
+                79.55670656179112,
+                172.23372008576416,
+                172.23372008576416,
+                87.95756309434518]
+
+leg_label2 = [86.69679535222944,
+                12.424778235029741,
+                167.02206352080853,
+                90.22761341372716,
+                96.6444108264961,
+                171.73089007435505,
+                78.50599177655495,
+                14.119431730407616,
+                159.1229352383847,
+                104.62057578935602,
+                109.19032911395873,
+                119.15079560583172,
+                119.15079560583172,
+                81.22515494325414]
+
+manse_label1 = [80.53458518445224,
+                84.376594027861,
+                86.89882436488416,
+                96.62547766886149,
+                88.59657286532767,
+                175.09593024152815,
+                84.92202728260551,
+                90.66339064815561,
+                82.72740995911713,
+                97.93598068903847,
+                89.35024411197374,
+                173.99171875775852,
+                173.99171875775852,
+                88.65539184204688]
+
+manse_label2 = [83.99703113249197,
+                159.05262326194162,
+                159.20922884772486,
+                96.89462639067158,
+                85.19362455079239,
+                173.90994708603586,
+                87.06228460539147,
+                157.5747415180131,
+                156.1704288963813,
+                92.05029158321538,
+                91.08181594326905,
+                174.55676356986686,
+                174.55676356986686,
+                80.38108652700386]
+label_list = ['leg_label1', 'leg_label2', 'manse_label1', 'manse_label2']
 MODEL_DIR = "./log/"
 
 class InferenceConfig(Config):
@@ -56,7 +114,7 @@ model = modellib.MaskRCNN(mode="inference",
 
 
 # Get path to saved weights
-MODEL = "../../mask_rcnn_coco_humanpose.h5" # This will be in workspace
+MODEL = "../../mask_rcnn_coco_0101.h5"
 print("Loading weights from ", MODEL)
 model.load_weights(MODEL, by_name=True)
 
@@ -64,18 +122,8 @@ model.load_weights(MODEL, by_name=True)
 def dist(x,y):
     return np.sqrt(np.sum((x-y)**2))
 
-#VIDEO = 0
-VIDEO="./image/data.mp4"
-
-#VIDEO = 0
 # function
 def SegImg(img, READY, STAGE, LIMIT=None, GAME=True, SUCCESS=False, FAIL=False):
-    cap = cv2.VideoCapture(VIDEO)
-    ret, img = cap.read()
-    ret
-    #img = cv2.imread("../../gong.jpg")
-    import matplotlib.pyplot as plt
-    plt.imshow(img)
 
     # Run detection
     result = model.detect_keypoint([img], verbose=0)
@@ -85,11 +133,10 @@ def SegImg(img, READY, STAGE, LIMIT=None, GAME=True, SUCCESS=False, FAIL=False):
 
     # CHECK AREA
     area_rois = (r["rois"][:,2]-r["rois"][:,0])*(r["rois"][:,3]-r["rois"][:,1])
-    area_rois
-    # SELECT PERSON area > 9999 & class_ids == 1
-    person_index = np.where(area_rois >= 5000)
+
+    # SELECT PERSON area > 9999
+    person_index = np.where(area_rois >= 10000)
     person_index = person_index[0]
-    person_index
     rois = r["rois"][person_index]
     masks = r["masks"][:,:,person_index]
     class_ids = r["class_ids"][person_index]
@@ -99,11 +146,9 @@ def SegImg(img, READY, STAGE, LIMIT=None, GAME=True, SUCCESS=False, FAIL=False):
         # if there are no people in image
         if len(person_index) == 0:
             return SUCCESS, FAIL, None
-
         # STAGE
         bounding, center = STAGE.determine_stage(masks[:,:,0])
-        bounding
-        center
+
         # calculate roi's center position
         distances = []
         for idx in range(len(rois)) :
@@ -123,9 +168,8 @@ def SegImg(img, READY, STAGE, LIMIT=None, GAME=True, SUCCESS=False, FAIL=False):
         # for postprocessing about person_masks
         person_masks = cv2.erode(person_masks, np.ones((5,5)), iterations=3)
         person_masks = cv2.dilate(person_masks, np.ones((5,5)), iterations=3)
-        cv2.imwrite("result.png" , person_masks)
         result = person_masks - bounding
-        print(bounding)
+
         # # of segmentation for person
         seg_num = np.array(np.where(person_masks == 200)).shape[1]
 
@@ -138,35 +182,18 @@ def SegImg(img, READY, STAGE, LIMIT=None, GAME=True, SUCCESS=False, FAIL=False):
         return SUCCESS, FAIL, result
 
     if READY and GAME == False:
-
-        if len(person_index) <= 1 :
+        # If There is no or more person
+        if len(person_index) == 0 :
             return SUCCESS, FAIL, None
+        elif len(person_index) == 1 :
+            return SUCCESS, FAIL, "MORE_PERSON"
 
-        centers = STAGE.determine_stage(masks[:,:,0])
+        # ground truth cordinates is in STAGE.determine_stage !!!!!!!!!!!
+        # ground_truth = STAGE.determine_stage(masks[:,:,0])
+        LIMIT = 2
 
-        # calculate roi's center position
-        distances = [None for x in range(LIMIT)]
-        distances
-
-        for j in range(len(centers)) :
-            temp_distance = []
-            for idx in range(len(rois)) :
-                x = (rois[idx][1] + rois[idx][3])//2
-                y = (rois[idx][0] + rois[idx][2])//2
-                pos = np.array([x,y])
-                distance = dist(pos, centers[j])
-                temp_distance.append(distance)
-            distances[j] = temp_distance
-
-        distances
-        left_instance_index = np.array(distances[0]).argsort()[:1]
-        right_instance_index = np.array(distances[1]).argsort()[:1]
-        left_instance_index
-        right_instance_index
-
-
-        final_instance_index = [int(left_instance_index),int(right_instance_index)]
-        final_instance_index
+        person_rois = (rois[:,2]-rois[:,0])*(rois[:,3]-rois[:,1])
+        final_instance_index = np.array(-person_rois).argsort()[:LIMIT]
 
         rois = rois[final_instance_index,]
         person_masks = masks[:,:,final_instance_index]
@@ -174,35 +201,29 @@ def SegImg(img, READY, STAGE, LIMIT=None, GAME=True, SUCCESS=False, FAIL=False):
         # keypoint part
         # keypoint has 0 ~ 16 parts = 17 parts
         person_keypoints = keypoints[final_instance_index,:,:]
-        person_keypoints.shape
 
         # add neck keypoint to 17 index = 18 part
         person_keypoints = add_neck_parts(img, person_keypoints, skeleton = parts_config.skeleton)
-        person_keypoints.shape
-        person_keypoints
 
         # draw skeleton image each person
         person_keypoints_img , person_keypoints_masks = display_person_keypoints(img, person_masks, person_keypoints, skeleton = parts_config.skeleton)
 
         parts_angles = []
-        print(person_keypoints_masks.shape)
-        # save person segfile
-        for i in range(len(person_index)):
-            cv2.imwrite("person_keypoints_masks{}.png".format(i), person_keypoints_masks[:,:,i])
-            parts_angles.append(calculate.all_parts_list(parts_config.parts_list, person_keypoints[i]))
+        #person_keypoints# x, y
 
+        for i in range(LIMIT):
+            parts_angles.append(calculate.all_parts_list(parts_config.parts_list, person_keypoints[i], img.shape))
+
+        #parts_angles
         number_of_parts = len(parts_config.parts_list)
-        distances = []
+        abs_distances = []
         for idx in range(number_of_parts) :
-            #for i in range(LIMIT):
-            result = dist(parts_angles[0][idx], parts_angles[1][idx])
-            distances.append(result)
-
+            for lis in label_list:
+                result = np.abs(parts_angles[0][idx] - parts_angles[1][idx])
+                abs_distances.append(result)
 
         # for calculating whether compare keypoints
-        SUCCESS, FAIL = calculate.compare_keypoints(distances)
+        SUCCESS, FAIL = calculate.check_angles(abs_distances)
         output = np.sum(person_keypoints_masks, axis=2)
-        #output.resize((480,640))
-        #cv2.imwrite("output.png" , output)
 
         return SUCCESS, FAIL, output
