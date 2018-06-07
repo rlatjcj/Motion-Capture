@@ -1,6 +1,4 @@
 import numpy as np
-import os
-#os.chdir("maskrcnn_pose/")
 import model as modellib
 
 import cv2
@@ -56,18 +54,13 @@ model = modellib.MaskRCNN(mode="inference",
 
 
 # Get path to saved weights
-#MODEL = "../../mask_rcnn_coco_0067.h5"
 MODEL = "../../mask_rcnn_coco_0101.h5"
-#MODEL = "../../mask_rcnn_coco_humanpose.h5" # Th # This will be in workspace
 print("Loading weights from ", MODEL)
 model.load_weights(MODEL, by_name=True)
 
 
 def dist(x,y):
     return np.sqrt(np.sum((x-y)**2))
-
-#VIDEO = 0
-#VIDEO="./image/hotel.mp4"
 
 # function
 def SegImg(img, READY, STAGE, LIMIT=None, GAME=True, SUCCESS=False, FAIL=False):
@@ -84,7 +77,6 @@ def SegImg(img, READY, STAGE, LIMIT=None, GAME=True, SUCCESS=False, FAIL=False):
     # SELECT PERSON area > 9999
     person_index = np.where(area_rois >= 10000)
     person_index = person_index[0]
-    person_index
     rois = r["rois"][person_index]
     masks = r["masks"][:,:,person_index]
     class_ids = r["class_ids"][person_index]
@@ -116,9 +108,8 @@ def SegImg(img, READY, STAGE, LIMIT=None, GAME=True, SUCCESS=False, FAIL=False):
         # for postprocessing about person_masks
         person_masks = cv2.erode(person_masks, np.ones((5,5)), iterations=3)
         person_masks = cv2.dilate(person_masks, np.ones((5,5)), iterations=3)
-        cv2.imwrite("result.png" , person_masks)
         result = person_masks - bounding
-        print(bounding)
+
         # # of segmentation for person
         seg_num = np.array(np.where(person_masks == 200)).shape[1]
 
@@ -143,7 +134,6 @@ def SegImg(img, READY, STAGE, LIMIT=None, GAME=True, SUCCESS=False, FAIL=False):
 
         person_rois = (rois[:,2]-rois[:,0])*(rois[:,3]-rois[:,1])
         final_instance_index = np.array(-person_rois).argsort()[:LIMIT]
-        final_instance_index
 
         rois = rois[final_instance_index,]
         person_masks = masks[:,:,final_instance_index]
@@ -151,11 +141,9 @@ def SegImg(img, READY, STAGE, LIMIT=None, GAME=True, SUCCESS=False, FAIL=False):
         # keypoint part
         # keypoint has 0 ~ 16 parts = 17 parts
         person_keypoints = keypoints[final_instance_index,:,:]
-        person_keypoints.shape
 
         # add neck keypoint to 17 index = 18 part
         person_keypoints = add_neck_parts(img, person_keypoints, skeleton = parts_config.skeleton)
-        person_keypoints.shape
 
         # draw skeleton image each person
         person_keypoints_img , person_keypoints_masks = display_person_keypoints(img, person_masks, person_keypoints, skeleton = parts_config.skeleton)
@@ -164,20 +152,17 @@ def SegImg(img, READY, STAGE, LIMIT=None, GAME=True, SUCCESS=False, FAIL=False):
         #person_keypoints# x, y
 
         for i in range(LIMIT):
-            #cv2.imwrite("mask{}.png".format(i), person_keypoints_masks[:,:,i])
             parts_angles.append(calculate.all_parts_list(parts_config.parts_list, person_keypoints[i], img.shape))
 
         #parts_angles
         number_of_parts = len(parts_config.parts_list)
         abs_distances = []
         for idx in range(number_of_parts) :
-            #for i in range(LIMIT):
             result = np.abs(parts_angles[0][idx] - parts_angles[1][idx])
             abs_distances.append(result)
 
         # for calculating whether compare keypoints
         SUCCESS, FAIL = calculate.check_angles(abs_distances)
         output = np.sum(person_keypoints_masks, axis=2)
-        cv2.imwrite("output.png" , output)
 
         return SUCCESS, FAIL, output

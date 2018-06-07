@@ -320,7 +320,6 @@ class DETERMINE_STAGE2():
 
             center1 = np.array([rect_width//4*1, rect_height])
             center2 = np.array([rect_width//4*3, rect_height])
-            print(center1, center2)
             return [center1, center2]
 
         else:
@@ -344,7 +343,6 @@ class DETERMINE_STAGE2():
 
             center1 = np.array([rect_width//4*1, rect_height])
             center2 = np.array([rect_width//4*3, rect_height])
-            print(center1, center2)
             return [center1, center2]
 
         else:

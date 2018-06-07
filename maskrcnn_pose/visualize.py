@@ -139,7 +139,7 @@ def noperson(print_time):
     else:
         return True
 
-def position(TIME_INIT):
+def position():
     screen.blit(FIT_PRINT, (display_width-FIT_PRINT_SHAPE[0],10))
     screen.blit(FIT_POSE, ((display_width-FIT_SHAPE[0])//2,display_height-FIT_SHAPE[1]))
     for event in pygame.event.get() :
@@ -161,7 +161,7 @@ def noperson2(print_time, result):
     else:
         return True
 
-def position2(TIME_INIT):
+def position2():
     screen.blit(FIT_PRINT, (display_width//2*0.75,10))
     screen.blit(FIT_POSE, ((display_width-FIT_SHAPE[0])//4*1,display_height-FIT_SHAPE[1]))
     screen.blit(FIT_POSE, ((display_width-FIT_SHAPE[0])//4*3,display_height-FIT_SHAPE[1]))
