@@ -56,7 +56,9 @@ model = modellib.MaskRCNN(mode="inference",
 
 
 # Get path to saved weights
-MODEL = "../../mask_rcnn_coco_humanpose.h5" # This will be in workspace
+#MODEL = "../../mask_rcnn_coco_0067.h5"
+MODEL = "../../mask_rcnn_coco_0101.h5"
+#MODEL = "../../mask_rcnn_coco_humanpose.h5" # Th # This will be in workspace
 print("Loading weights from ", MODEL)
 model.load_weights(MODEL, by_name=True)
 
@@ -69,12 +71,6 @@ def dist(x,y):
 
 # function
 def SegImg(img, READY, STAGE, LIMIT=None, GAME=True, SUCCESS=False, FAIL=False):
-
-    #ret
-    #img = cv2.imread("../../test.jpeg")
-    #shrink = cv2.resize(img, None, fx=0.4, fy=0.4, interpolation=cv2.INTER_AREA)
-    #import matplotlib.pyplot as plt
-    #plt.imshow(img)
 
     # Run detection
     result = model.detect_keypoint([img], verbose=0)
@@ -135,8 +131,7 @@ def SegImg(img, READY, STAGE, LIMIT=None, GAME=True, SUCCESS=False, FAIL=False):
         return SUCCESS, FAIL, result
 
     if READY and GAME == False:
-        LIMIT = 2
-
+        # If There is no or more person
         if len(person_index) == 0 :
             return SUCCESS, FAIL, None
         elif len(person_index) == 1 :
@@ -144,8 +139,10 @@ def SegImg(img, READY, STAGE, LIMIT=None, GAME=True, SUCCESS=False, FAIL=False):
 
         # ground truth cordinates is in STAGE.determine_stage !!!!!!!!!!!
         # ground_truth = STAGE.determine_stage(masks[:,:,0])
+        LIMIT = 2
 
-        final_instance_index = np.array(-area_rois).argsort()[:LIMIT]
+        person_rois = (rois[:,2]-rois[:,0])*(rois[:,3]-rois[:,1])
+        final_instance_index = np.array(-person_rois).argsort()[:LIMIT]
         final_instance_index
 
         rois = rois[final_instance_index,]
@@ -159,29 +156,27 @@ def SegImg(img, READY, STAGE, LIMIT=None, GAME=True, SUCCESS=False, FAIL=False):
         # add neck keypoint to 17 index = 18 part
         person_keypoints = add_neck_parts(img, person_keypoints, skeleton = parts_config.skeleton)
         person_keypoints.shape
-        person_keypoints
 
         # draw skeleton image each person
         person_keypoints_img , person_keypoints_masks = display_person_keypoints(img, person_masks, person_keypoints, skeleton = parts_config.skeleton)
 
         parts_angles = []
-        print(person_keypoints_masks.shape)
-        # save person segfile
-        person_index
-        for i in range(LIMIT):
-            #cv2.imwrite("person_keypoints_masks{}.png".format(i), person_keypoints_masks[:,:,i])
-            parts_angles.append(calculate.all_parts_list(parts_config.parts_list, person_keypoints[i]))
+        #person_keypoints# x, y
 
+        for i in range(LIMIT):
+            #cv2.imwrite("mask{}.png".format(i), person_keypoints_masks[:,:,i])
+            parts_angles.append(calculate.all_parts_list(parts_config.parts_list, person_keypoints[i], img.shape))
+
+        #parts_angles
         number_of_parts = len(parts_config.parts_list)
-        distances = []
+        abs_distances = []
         for idx in range(number_of_parts) :
             #for i in range(LIMIT):
-            result = dist(parts_angles[0][idx], parts_angles[1][idx])
-            distances.append(result)
-
+            result = np.abs(parts_angles[0][idx] - parts_angles[1][idx])
+            abs_distances.append(result)
 
         # for calculating whether compare keypoints
-        SUCCESS, FAIL = calculate.compare_keypoints(distances)
+        SUCCESS, FAIL = calculate.check_angles(abs_distances)
         output = np.sum(person_keypoints_masks, axis=2)
         cv2.imwrite("output.png" , output)
 
