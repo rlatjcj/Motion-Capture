@@ -6,13 +6,10 @@ from load import *
 from settings import *
 from visualize import *
 
-#VIDEO="./image/hotel.mp4"
-#VIDEO="./image/data2.mp4"
 VIDEO = 0
 camera = cv2.VideoCapture(VIDEO)
 LIMIT = 2
 teambattle = False
-
 
 
 def INTRO(CURRENT, PREV):
@@ -529,7 +526,7 @@ def GAME2(CURRENT, PREV):
                     PRINT_SUCCESS = True
                     print_time = time.time()
 
-                screen = STAGE.determine_stage(screen, False)
+                screen = STAGE.determine_stage(screen)
                 if timer_sound-timer == 1:
                     timer_sound = timer
                     if timer != 0:

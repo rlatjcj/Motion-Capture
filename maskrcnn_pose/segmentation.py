@@ -11,67 +11,8 @@ from stage import DETERMINE_STAGE2
 
 import calculate
 from joint import *
+from settings import *
 
-leg_label1 = [83.65840977699015,
-                17.626292629082677,
-                156.55267426830184,
-                89.39508522238597,
-                99.8315555417711,
-                139.5958684915879,
-                80.82267053256157,
-                14.600449140468962,
-                170.30105914869307,
-                106.16452451475014,
-                79.55670656179112,
-                172.23372008576416,
-                172.23372008576416,
-                87.95756309434518]
-
-leg_label2 = [86.69679535222944,
-                12.424778235029741,
-                167.02206352080853,
-                90.22761341372716,
-                96.6444108264961,
-                171.73089007435505,
-                78.50599177655495,
-                14.119431730407616,
-                159.1229352383847,
-                104.62057578935602,
-                109.19032911395873,
-                119.15079560583172,
-                119.15079560583172,
-                81.22515494325414]
-
-manse_label1 = [80.53458518445224,
-                84.376594027861,
-                86.89882436488416,
-                96.62547766886149,
-                88.59657286532767,
-                175.09593024152815,
-                84.92202728260551,
-                90.66339064815561,
-                82.72740995911713,
-                97.93598068903847,
-                89.35024411197374,
-                173.99171875775852,
-                173.99171875775852,
-                88.65539184204688]
-
-manse_label2 = [83.99703113249197,
-                159.05262326194162,
-                159.20922884772486,
-                96.89462639067158,
-                85.19362455079239,
-                173.90994708603586,
-                87.06228460539147,
-                157.5747415180131,
-                156.1704288963813,
-                92.05029158321538,
-                91.08181594326905,
-                174.55676356986686,
-                174.55676356986686,
-                80.38108652700386]
-label_list = ['leg_label1', 'leg_label2', 'manse_label1', 'manse_label2']
 MODEL_DIR = "./log/"
 
 class InferenceConfig(Config):
@@ -207,23 +148,36 @@ def SegImg(img, READY, STAGE, LIMIT=None, GAME=True, SUCCESS=False, FAIL=False):
 
         # draw skeleton image each person
         person_keypoints_img , person_keypoints_masks = display_person_keypoints(img, person_masks, person_keypoints, skeleton = parts_config.skeleton)
+        output = np.sum(person_keypoints_masks, axis=2)
 
         parts_angles = []
         #person_keypoints# x, y
-
         for i in range(LIMIT):
             parts_angles.append(calculate.all_parts_list(parts_config.parts_list, person_keypoints[i], img.shape))
 
-        #parts_angles
+        # compare angles of one player to angles of another player
+        # if there is a difference of angles bigger than threshold, FAIL!
         number_of_parts = len(parts_config.parts_list)
-        abs_distances = []
-        for idx in range(number_of_parts) :
-            for lis in label_list:
-                result = np.abs(parts_angles[0][idx] - parts_angles[1][idx])
-                abs_distances.append(result)
+        for i in range(len(parts_angles)):
+            for j in range(i+1, len(parts_angles)):
+                angle_dif = np.abs(np.array(parts_angles[i])-np.array(parts_angles[j]))
+                comp_player_s, _ = calculate.check_angles(angle_dif)
+                if not comp_player_s:
+                    SUCCESS = False
+                    FAIL = True
+                    return SUCCESS, FAIL, output
 
-        # for calculating whether compare keypoints
-        SUCCESS, FAIL = calculate.check_angles(abs_distances)
-        output = np.sum(person_keypoints_masks, axis=2)
+        # compare angle of player to label
+        # if there is a difference of angles bigger than threshold, SUCCESS!
+        for part in parts_angles:
+            for label in label_list[STAGE.ROUND]:
+                angle_dif_label = np.abs(label-np.array(part))
+                comp_label_s, _ = calculate.check_angles(angle_dif_label)
+                if comp_player_s:
+                    SUCCESS = True
+                    FAIL = False
+                    return SUCCESS, FAIL, output
 
+        SUCCESS = False
+        FAIL = True
         return SUCCESS, FAIL, output
