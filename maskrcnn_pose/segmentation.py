@@ -155,29 +155,39 @@ def SegImg(img, READY, STAGE, LIMIT=None, GAME=True, SUCCESS=False, FAIL=False):
         for i in range(LIMIT):
             parts_angles.append(calculate.all_parts_list(parts_config.parts_list, person_keypoints[i], img.shape))
 
+        number_of_parts = len(parts_config.parts_list)
+        # compare angle of player to label
+        # if there is a difference of angles bigger than threshold, SUCCESS!
+        num_label_s = []
+        for part in parts_angles:
+            for label in label_list[STAGE.ROUND]:
+                angle_dif_label = np.abs(label-np.array(part))
+                print(angle_dif_label)
+                comp_label_s, _ = calculate.check_angles(angle_dif_label)
+                if comp_player_s:
+                    num_label_s.append(1)
+                    break
+
+        if np.sum(num_label_s) != number_of_parts:
+            print("2 fail")
+            SUCCESS = False
+            FAIL = True
+            return SUCCESS, FAIL, output
+
         # compare angles of one player to angles of another player
         # if there is a difference of angles bigger than threshold, FAIL!
-        number_of_parts = len(parts_config.parts_list)
         for i in range(len(parts_angles)):
             for j in range(i+1, len(parts_angles)):
                 angle_dif = np.abs(np.array(parts_angles[i])-np.array(parts_angles[j]))
+                print(angle_dif)
                 comp_player_s, _ = calculate.check_angles(angle_dif)
                 if not comp_player_s:
+                    print('1 fail')
                     SUCCESS = False
                     FAIL = True
                     return SUCCESS, FAIL, output
 
-        # compare angle of player to label
-        # if there is a difference of angles bigger than threshold, SUCCESS!
-        for part in parts_angles:
-            for label in label_list[STAGE.ROUND]:
-                angle_dif_label = np.abs(label-np.array(part))
-                comp_label_s, _ = calculate.check_angles(angle_dif_label)
-                if comp_player_s:
-                    SUCCESS = True
-                    FAIL = False
-                    return SUCCESS, FAIL, output
-
-        SUCCESS = False
-        FAIL = True
+        print('1 success')
+        SUCCESS = True
+        FAIL = False
         return SUCCESS, FAIL, output
