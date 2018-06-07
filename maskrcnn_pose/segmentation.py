@@ -164,7 +164,7 @@ def SegImg(img, READY, STAGE, LIMIT=None, GAME=True, SUCCESS=False, FAIL=False):
                 angle_dif_label = np.abs(label-np.array(part))
                 print(angle_dif_label)
                 comp_label_s, _ = calculate.check_angles(angle_dif_label)
-                if comp_player_s:
+                if comp_label_s:
                     num_label_s.append(1)
                     break
 
