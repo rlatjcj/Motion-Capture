@@ -78,4 +78,4 @@ manse_label2 = np.array([83.99703113249197,
                             174.55676356986686,
                             174.55676356986686,
                             80.38108652700386])
-label_list = [[leg_label1, leg_label2], [manse_label1, manse_label2]]
+label_list = [[manse_label1, manse_label2], [leg_label1, leg_label2]]

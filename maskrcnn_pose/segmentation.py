@@ -160,7 +160,7 @@ def SegImg(img, READY, STAGE, LIMIT=None, GAME=True, SUCCESS=False, FAIL=False):
         # if there is a difference of angles bigger than threshold, SUCCESS!
         num_label_s = []
         for part in parts_angles:
-            for label in label_list[STAGE.ROUND]:
+            for label in label_list[STAGE.ROUND-1]:
                 angle_dif_label = np.abs(label-np.array(part))
                 print(angle_dif_label)
                 comp_label_s, _ = calculate.check_angles(angle_dif_label)
@@ -168,8 +168,9 @@ def SegImg(img, READY, STAGE, LIMIT=None, GAME=True, SUCCESS=False, FAIL=False):
                     num_label_s.append(1)
                     break
 
-        if np.sum(num_label_s) != number_of_parts:
-            print("2 fail")
+        print(num_label_s)
+        if len(num_label_s) != len(parts_angles):
+            print("1 fail")
             SUCCESS = False
             FAIL = True
             return SUCCESS, FAIL, output
@@ -182,12 +183,12 @@ def SegImg(img, READY, STAGE, LIMIT=None, GAME=True, SUCCESS=False, FAIL=False):
                 print(angle_dif)
                 comp_player_s, _ = calculate.check_angles(angle_dif)
                 if not comp_player_s:
-                    print('1 fail')
+                    print('2 fail')
                     SUCCESS = False
                     FAIL = True
                     return SUCCESS, FAIL, output
 
-        print('1 success')
+        print('2 success')
         SUCCESS = True
         FAIL = False
         return SUCCESS, FAIL, output

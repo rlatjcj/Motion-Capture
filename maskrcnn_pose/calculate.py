@@ -2,7 +2,7 @@ import math
 import numpy as np
 
 PERCENTILE_THRESHOLD = 0.01
-ANGLE_THRESHOLD = 30 # angle thresholds
+ANGLE_THRESHOLD = 40 # angle thresholds
 
 
 # GANE1
@@ -50,9 +50,10 @@ def all_parts_list(parts_list, person_keypoints, img_shape) :
 
 
 def check_angles(abs_distances, thresholds = ANGLE_THRESHOLD) :
-    idx = np.where(abs_distances > thresholds)
+    idx = np.where(np.array(abs_distances) > thresholds)
+    print(len(idx[0]))
 
-    if len(abs_distances) < 5 :
+    if len(idx[0]) < 5 :
         SUCCESS = True
         FAIL = False
         return  SUCCESS, FAIL
