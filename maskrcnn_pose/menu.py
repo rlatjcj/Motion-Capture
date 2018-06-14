@@ -143,7 +143,8 @@ def GAME1(CURRENT, PREV):
     from stage import DETERMINE_STAGE
 
     ret, img = camera.read()
-    STAGE = DETERMINE_STAGE(display_height, display_width)
+    img_ratio = img.shape[0] / img.shape[1]
+    STAGE = DETERMINE_STAGE(display_height, display_width, img_ratio)
     SegImg(img, READY, STAGE, LIMIT, GAME=True)
 
     # for teambattle

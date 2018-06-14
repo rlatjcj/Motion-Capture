@@ -12,7 +12,7 @@ MENU = {0: INTRO, 1: CHOOSE_GAME, 2: GAME1, 3: GAME2, 4: SETTING}
 
 def main():
     try:
-        '''
+
         intro = cv2.VideoCapture("./sound/kt_motion_intro.mp4")
         while True:
             ret, img = intro.read()
@@ -22,7 +22,7 @@ def main():
             screen.blit(frame_intro, (0,0))
             pygame.display.flip()
             clock.tick(30)
-        '''
+        
         CURRENT = 0
         PREV = 0
         INTRO_MUSIC = True

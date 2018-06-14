@@ -10,10 +10,11 @@ BOUNDING_COLOR = 100
 
 class DETERMINE_STAGE():
 
-    def __init__(self, height, width):
+    def __init__(self, height, width, img_ratio):
         self.ROUND = 1
-        self.height = height
-        self.width = width
+        self.height = height # 1080
+        self.width = width # 1920
+        self.width_visu = int(height/img_ratio)
 
         self.ROUND_LIMIT = 3
         # the number of STAGEs for each round
@@ -44,8 +45,8 @@ class DETERMINE_STAGE():
     # 1-0 ROUND
     def rect_big(self, img=None, flag=True):
         if flag:
-            seg_height = img.shape[0]
-            seg_width = img.shape[1]
+            seg_height = img.shape[0] # 480
+            seg_width = img.shape[1] # 640
             rect_width = seg_width * 3 // 5
             rect_height = seg_height * 4 // 5
             bounding = cv2.rectangle(np.zeros((seg_height, seg_width), dtype=np.uint8),
@@ -57,7 +58,7 @@ class DETERMINE_STAGE():
             return bounding, center
 
         else:
-            rect_width = self.width * 3 // 5
+            rect_width = self.width_visu * 3 // 5
             rect_height = self.height * 4 // 5
             pygame.draw.rect(img, BOUNDING_COLOR_PRINT,
                              ((self.width-rect_width)//2,
@@ -83,7 +84,7 @@ class DETERMINE_STAGE():
             return bounding, center
 
         else:
-            rect_width = self.height * 4 // 5
+            rect_width = self.width_visu * 4 // 5
             rect_height = self.height * 4 // 5
             tri = pygame.transform.scale(GAME1_tri, (rect_width, rect_height))
             img.blit(tri, ((self.width-rect_width)//2, self.height-rect_height))
@@ -106,7 +107,7 @@ class DETERMINE_STAGE():
             return bounding, center
 
         else:
-            rect_width = self.height * 4 // 5
+            rect_width = self.width_visu * 4 // 5
             rect_height = self.height * 4 // 5
             mush = pygame.transform.scale(GAME1_mush, (rect_width, rect_height))
             img.blit(mush, ((self.width-rect_width)//2, self.height-rect_height))
@@ -129,7 +130,7 @@ class DETERMINE_STAGE():
             return bounding, center
 
         else:
-            rect_width = self.width * 2 // 5
+            rect_width = self.width_visu * 2 // 5
             rect_height = self.height * 4 // 5
             pygame.draw.rect(img, BOUNDING_COLOR_PRINT,
                              ((self.width-rect_width)//2,
@@ -155,7 +156,7 @@ class DETERMINE_STAGE():
             return bounding, center
 
         else:
-            rect_width = self.width * 3 // 5
+            rect_width = self.width_visu * 3 // 5
             rect_height = self.height * 2 // 5
             pygame.draw.rect(img, BOUNDING_COLOR_PRINT,
                              ((self.width-rect_width)//2,
@@ -181,7 +182,7 @@ class DETERMINE_STAGE():
             return bounding, center
 
         else:
-            rect_width = self.height * 4 // 5
+            rect_width = self.width_visu * 4 // 5
             rect_height = self.height * 4 // 5
             circle = pygame.transform.scale(GAME1_circle, (rect_width, rect_height))
             img.blit(circle, ((self.width-rect_width)//2, self.height-rect_height))
@@ -204,7 +205,7 @@ class DETERMINE_STAGE():
             return bounding, center
 
         else:
-            rect_width = self.height * 4 // 5
+            rect_width = self.width_visu * 4 // 5
             rect_height = self.height * 4 // 5
             infi = pygame.transform.scale(GAME1_infi, (rect_width, rect_height))
             img.blit(infi, ((self.width-rect_width)//2, self.height-rect_height))
@@ -227,7 +228,7 @@ class DETERMINE_STAGE():
             return bounding, center
 
         else:
-            rect_width = self.width * 3 // 5
+            rect_width = self.width_visu * 3 // 5
             rect_height = self.height * 3 // 5
             pygame.draw.rect(img, BOUNDING_COLOR_PRINT,
                              ((self.width-rect_width)//2,
@@ -254,7 +255,7 @@ class DETERMINE_STAGE():
             return bounding, center
 
         else:
-            rect_width = self.height * 4 // 5
+            rect_width = self.width_visu * 4 // 5
             rect_height = self.height * 4 // 5
             heart = pygame.transform.scale(GAME1_heart, (rect_width, rect_height))
             img.blit(heart, ((self.width-rect_width)//2, self.height-rect_height))
@@ -277,7 +278,7 @@ class DETERMINE_STAGE():
             return bounding, center
 
         else:
-            rect_width = self.height * 4 // 5
+            rect_width = self.width_visu * 4 // 5
             rect_height = self.height * 4 // 5
             star = pygame.transform.scale(GAME1_star, (rect_width, rect_height))
             img.blit(star, ((self.width-rect_width)//2, self.height-rect_height))
