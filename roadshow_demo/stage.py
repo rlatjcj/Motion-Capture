@@ -18,7 +18,7 @@ class DETERMINE_STAGE():
 
         self.ROUND_LIMIT = 1
         # the number of STAGEs for each round
-        self.ROUND_1 = 10
+        self.ROUND_1 = 1
         #self.ROUND_2 = 4
         #self.ROUND_3 = 3
         self.version = {1: np.random.choice(self.ROUND_1)}.get(self.ROUND)
@@ -26,16 +26,7 @@ class DETERMINE_STAGE():
 
 
     def determine_stage(self, img=None, flag=True):
-        self.STAGE_LIST = {"1-0": self.rect_big,
-                           "1-1": self.tri,
-                           "1-2": self.mush,
-                           "1-3": self.rect_thin,
-                           "1-4": self.rect_fat,
-                           "1-5": self.circle,
-                           "1-6": self.infi,
-                           "1-7": self.rect_air,
-                           "1-8": self.heart,
-                           "1-9": self.star}.get("{}-{}".format(self.ROUND, self.version))
+        self.STAGE_LIST = {"1-0": self.heart}.get("{}-{}".format(self.ROUND, self.version))
 
         return self.STAGE_LIST(img, flag)
 
